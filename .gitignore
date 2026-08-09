@@ -1,0 +1,23 @@
+# Secrets — never commit these
+.env
+.env.*
+*credentials*.json
+*client_secret*.json
+*token*.json
+*.pem
+*.key
+
+# n8n local runtime
+.n8n/
+database.sqlite
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini

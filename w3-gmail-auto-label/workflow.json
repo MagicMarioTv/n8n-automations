@@ -1,0 +1,152 @@
+{
+  "name": "Gmail test build",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "a586e74d-f3ba-4352-9bd5-61999c3b2224",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 5,
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "37f2c6b6-d366-4f32-841e-0c76aac89f56",
+      "name": "Get many messages",
+      "webhookId": "455ec5a2-43b4-4ea6-9912-0cfd55165a2c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ok6fCQ1nbwMufTwX",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ab34b998-7051-4321-87cd-2ecf5d825365",
+              "leftValue": "={{ $json.From }}",
+              "rightValue": "PlatformNotifications-noreply@google.com",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        0
+      ],
+      "id": "c56f86ac-b195-4145-b622-64e4cacf073c",
+      "name": "FilterbyPlatformNotifications"
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $json.id }}",
+        "labelIds": [
+          "Label_3616516958162626207"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "4ef34e5a-1a08-40a8-a4b4-ec69aac0d669",
+      "name": "Add label to message",
+      "webhookId": "50354d03-9b03-4741-b50a-eae55fb6d1cb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ok6fCQ1nbwMufTwX",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages": {
+      "main": [
+        [
+          {
+            "node": "FilterbyPlatformNotifications",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FilterbyPlatformNotifications": {
+      "main": [
+        [
+          {
+            "node": "Add label to message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e0947b3d-a41d-43e7-96e0-b42e1eb4c9e2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4c416a1b2921ddcb88fa3c50280db3cc22596e7edbeee26c2219e81e8aff8571"
+  },
+  "nodeGroups": [],
+  "id": "IHv1Wznnk2Y3oha9",
+  "tags": [
+    {
+      "name": "sat-builds",
+      "id": "aJYuEHCKltZqMmz3",
+      "updatedAt": "2026-08-09T00:48:05.797Z",
+      "createdAt": "2026-08-09T00:48:05.797Z"
+    }
+  ]
+}
