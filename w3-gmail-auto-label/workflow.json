@@ -134,10 +134,8 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "e0947b3d-a41d-43e7-96e0-b42e1eb4c9e2",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "4c416a1b2921ddcb88fa3c50280db3cc22596e7edbeee26c2219e81e8aff8571"
+    "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
   "id": "IHv1Wznnk2Y3oha9",
