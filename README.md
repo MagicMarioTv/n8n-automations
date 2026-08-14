@@ -11,6 +11,7 @@ I work in content operations at Warner Bros. Discovery, where I automate encodin
 | Week | Build | What it covers |
 |---|---|---|
 | 1 | [w1-rss-notifier](./w1-rss-notifier) | RSS polling, keyword filtering, Discord webhook |
+| 2 | [w2-webhook-http](./w2-webhook-http) | Inbound webhooks, payload validation, structured HTTP responses |
 | 3 | [w3-gmail-auto-label](./w3-gmail-auto-label) | Gmail OAuth2, API vs workflow filtering, per-item writes |
 
 ## Themes I care about
