@@ -1,0 +1,217 @@
+{
+  "name": "W4 - AI Email Digest",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "37e6aa5d-5f22-40e1-9547-6cc0df7d64b2",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 5,
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "c4802deb-b4e7-4d0e-ac11-1c5871a6ff88",
+      "name": "Get many messages",
+      "webhookId": "248dea8a-d157-477a-89b1-a21685ab2ce6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ok6fCQ1nbwMufTwX",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Summarize this email in one line, maximum 15 words. State what it is and what if anything it asks of the reader. If it is automated or promotional, say so and stop.\n\nFrom: {{ $json.From }}\nSubject: {{ $json.Subject }}\nPreview: {{ $json.snippet }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        448,
+        0
+      ],
+      "id": "fba6b933-5677-4703-a6fe-8982384df8f7",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        384,
+        208
+      ],
+      "id": "0dc6143c-df50-42b1-af5a-531fae7bf602",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "qOCnKkDD4MGbhfUE",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"sender\": \"Aéropostale\",\n  \"summary\": \"BOGO free denim promotion\",\n  \"category\": \"promotional\",\n  \"needs_reply\": false\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        208
+      ],
+      "id": "4366169b-139c-4e28-b879-1e3ccb8dbcee",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "={{ $json.digest }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        0
+      ],
+      "id": "b86acb45-855c-4888-a729-95fa3a5230bb",
+      "name": "Discord",
+      "webhookId": "dfafc7cd-8fad-49b2-8f55-c1b310406694",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "Hpf3TvVoAJhEytlT",
+          "name": "Discord Webhook account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const lines = $input.all().map(i => {\n  const d = i.json.output;\n  return `• ${d.sender} — ${d.summary}`;\n});\n\nreturn [{ json: { digest: `**Inbox digest — ${lines.length} messages**\\n\\n` + lines.join('\\n') } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        816,
+        0
+      ],
+      "id": "a541c122-a9e2-44ab-aab3-0d20db703edb",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many messages": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "id": "3rqjn5caKY5RqPsC",
+  "tags": [
+    {
+      "updatedAt": "2026-08-09T00:48:05.797Z",
+      "createdAt": "2026-08-09T00:48:05.797Z",
+      "id": "aJYuEHCKltZqMmz3",
+      "name": "sat-builds"
+    }
+  ]
+}
