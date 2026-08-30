@@ -80,7 +80,8 @@
     },
     {
       "parameters": {
-        "jsonSchemaExample": "{\n  \"sender\": \"Aéropostale\",\n  \"summary\": \"BOGO free denim promotion\",\n  \"category\": \"promotional\",\n  \"needs_reply\": false\n}"
+        "schemaType": "manual",
+        "inputSchema": "{\"type\":\"object\",\"properties\":{\"sender\":{\"type\":\"string\"},\"summary\":{\"type\":\"string\"},\"category\":{\"type\":\"string\",\"enum\":[\"promotional\",\"automated\",\"personal\",\"work\",\"other\"]},\"needs_reply\":{\"type\":\"boolean\"}},\"required\":[\"sender\",\"summary\",\"category\",\"needs_reply\"]}"
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
