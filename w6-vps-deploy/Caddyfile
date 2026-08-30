@@ -1,0 +1,3 @@
+n8n.mariomoreno.dev {
+    reverse_proxy n8n:5678
+}
