@@ -16,16 +16,16 @@ I work in content operations at Warner Bros. Discovery, where I automate encodin
 | 4 | [w4-ai-email-digest](./w4-ai-email-digest) | Basic LLM Chain, structured output validation, cost per run |
 | 5 | [w5-selfhost-docker](./w5-selfhost-docker) | Docker Compose, volumes and data persistence, env-var secrets | 
 | 6 | [w6-vps-deploy](./w6-vps-deploy) | Public VPS, pinned version, Caddy reverse proxy, real HTTPS |
-| 7–8 | [w7-media-request-triage](./w7-media-request-triage) | Public form intake, enum-constrained classifier, hand-labeled eval set *(day 1 of 2 — ships 2026-09-12)* |
+| 7 to 8 | [w7-media-request-triage](./w7-media-request-triage) | Public form intake, enum-constrained classifier, hand-labeled eval set *(day 1 of 2, ships 2026-09-12)* |
 
 ## Themes I care about
 
 Automation that runs once in a demo is easy. These builds pay attention to the parts that decide whether something survives in production:
 
-- **Idempotency** — what happens if this runs twice?
-- **Error handling** — retries, backoff, and where failures land
-- **Cost** — which steps actually need an LLM, and which are just plumbing
-- **Verification** — how do you know it worked, rather than assuming
+- **Idempotency**: what happens if this runs twice?
+- **Error handling**: retries, backoff, and where failures land
+- **Cost**: which steps actually need an LLM, and which are just plumbing
+- **Verification**: how do you know it worked, rather than assuming
 
 ## Stack
 

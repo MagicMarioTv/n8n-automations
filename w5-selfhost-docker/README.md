@@ -44,7 +44,7 @@ volumes:
 |---|---|
 | `image:` | The prebuilt n8n package, pulled from n8n's registry. Not built here, downloaded. |
 | `restart: unless-stopped` | Comes back automatically after a reboot or a crash, unless stopped deliberately |
-| `ports: "5678:5678"` | `HOST:CONTAINER`. The browser reaches the left number; n8n listens on the right, inside its own isolated network. They are independent — `"8080:5678"` would move the door without moving n8n. |
+| `ports: "5678:5678"` | `HOST:CONTAINER`. The browser reaches the left number; n8n listens on the right, inside its own isolated network. They are independent; `"8080:5678"` would move the door without moving n8n. |
 | `environment:` | Config passed into the container at startup |
 | `${N8N_ENCRYPTION_KEY}` | Substituted from `.env` at runtime. The committed file names the secret; it never contains it. |
 | `volumes: n8n_data:/home/node/.n8n` | Storage that lives outside the container, mounted where n8n keeps its database |
@@ -56,7 +56,7 @@ volumes:
 
 n8n keeps workflows, credentials, and user accounts in a database inside the container. Containers are disposable. Without a volume, removing one destroys all of it.
 
-The trap is that this is not obvious in daily use. **Stopping and starting the same container preserves the data** — the container's writable layer survives a stop. So the setup appears to work, for weeks. The loss happens on removal, which is what `docker compose down` does and what every version upgrade does. The mistake and the consequence are separated by enough time that the connection is easy to miss.
+The trap is that this is not obvious in daily use. **Stopping and starting the same container preserves the data**, because the container's writable layer survives a stop. So the setup appears to work, for weeks. The loss happens on removal, which is what `docker compose down` does and what every version upgrade does. The mistake and the consequence are separated by enough time that the connection is easy to miss.
 
 ### Tested, not assumed
 
@@ -67,7 +67,7 @@ The trap is that this is not obvious in daily use. **Stopping and starting the s
 4. Refreshed the browser
 ```
 
-**Result:** the workflow was still there. So was the owner account — confirmed by opening the instance in a private window, which prompted for login rather than letting me in, proving the user record persisted rather than a stale cookie fooling me.
+**Result:** the workflow was still there. So was the owner account, confirmed by opening the instance in a private window, which prompted for login rather than letting me in, proving the user record persisted rather than a stale cookie fooling me.
 
 The whole database survived a container that no longer exists. That is the volume doing its job.
 
@@ -77,13 +77,13 @@ The whole database survived a container that no longer exists. That is the volum
 
 Three failures, all in setup rather than in n8n. All three were readable from the output.
 
-### 1. Docker Desktop would not start — WSL missing
+### 1. Docker Desktop would not start: WSL missing
 
 ```
 c:\windows\system32\wsl.exe --version: exit status 1
 ```
 
-The output was not a version and not an error. It was **usage text**, which is what a program prints when it does not recognize an argument. And the usage list was short: only `--install`, `--list`, `--status`, `--help` — none of `--shutdown`, `--terminate`, `--export`. That short list is the signature of the bootstrap stub Windows ships to install WSL, not a working WSL.
+The output was not a version and not an error. It was **usage text**, which is what a program prints when it does not recognize an argument. And the usage list was short: only `--install`, `--list`, `--status`, `--help`, with none of `--shutdown`, `--terminate`, `--export`. That short list is the signature of the bootstrap stub Windows ships to install WSL, not a working WSL.
 
 Docker Desktop runs containers inside WSL 2. There was no WSL. Fixed with `wsl --install` from an elevated prompt plus a reboot.
 
@@ -97,7 +97,7 @@ The prompt shows where you are standing. That is the first thing to check when a
 
 ### 3. `additional properties 'environemnt' not allowed`
 
-A typo — `n` and `m` transposed. Caught by Compose's schema validation *before* anything was pulled or created.
+A typo: `n` and `m` transposed. Caught by Compose's schema validation *before* anything was pulled or created.
 
 Worth comparing against the Week 4 build. There, `category` was typed as a plain string, so `"Promotional"`, `"promotional"` and `"Automated/Promotional"` all validated fine and the inconsistency only surfaced on inspection. Here, a strict schema caught a two-letter mistake in under a second and refused to proceed.
 

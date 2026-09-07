@@ -2,7 +2,7 @@
 
 An n8n workflow that watches an RSS feed, keeps only the items matching a keyword, and posts them to Discord.
 
-Week 1 of a 28-week AI automation roadmap. It's deliberately small — the point was the reps and the habits, not the artifact.
+Week 1 of a 28-week AI automation roadmap. It's deliberately small. The point was the reps and the habits, not the artifact.
 
 ---
 
@@ -14,7 +14,7 @@ Week 1 of a 28-week AI automation roadmap. It's deliberately small — the point
 4. Create a **Discord Webhook** credential and paste your webhook URL (Discord: Server Settings → Integrations → Webhooks → New Webhook).
 5. Execute the workflow. Matching items post to your channel.
 
-**The webhook URL is a secret.** Anyone holding it can post to your server. It lives in n8n's credential store, not in this repo — if you export the workflow again, check the JSON before committing.
+**The webhook URL is a secret.** Anyone holding it can post to your server. It lives in n8n's credential store, not in this repo. If you export the workflow again, check the JSON before committing.
 
 ---
 
@@ -34,7 +34,7 @@ Sample run: **25 items in → 1 kept, 24 discarded.**
 
 ## Trade-offs
 
-**1. RSS Read instead of RSS Feed Trigger.** The trigger version returns only items it considers *new* since the last poll — correct for production, useless while building, because a single item can't show you whether a filter is working. RSS Read returns everything every time. The cost is dedup: see Limitations.
+**1. RSS Read instead of RSS Feed Trigger.** The trigger version returns only items it considers *new* since the last poll. That is correct for production and useless while building, because a single item can't show you whether a filter is working. RSS Read returns everything every time. The cost is dedup: see Limitations.
 
 **2. Discord instead of Slack.** Discord's webhook is a URL you paste into a credential. Slack's node wants a real OAuth app, which is 40 minutes of setup that teaches nothing about n8n. Slack is worth doing later, when the OAuth itself is the thing being learned.
 
@@ -46,15 +46,15 @@ Sample run: **25 items in → 1 kept, 24 discarded.**
 
 ## What broke
 
-**Filter discarded everything.** The condition was `{{ $json.title }} is equal to` with the right-hand value left empty — the box still held its `value2` placeholder. So the condition read *"title equals nothing,"* which is false for every item. A filter condition is three parts: value, operator, comparison value. Naming the field only supplies the first.
+**Filter discarded everything.** The condition was `{{ $json.title }} is equal to` with the right-hand value left empty. The box still held its `value2` placeholder. So the condition read *"title equals nothing,"* which is false for every item. A filter condition is three parts: value, operator, comparison value. Naming the field only supplies the first.
 
-**Couldn't tell "no input" from "everything rejected."** The `Kept` tab was empty and it looked like nothing had arrived. The `Discarded (1 item)` tab next to it was the actual signal — the item did arrive and was rejected. Two different failure modes that look identical if you only watch one tab.
+**Couldn't tell "no input" from "everything rejected."** The `Kept` tab was empty and it looked like nothing had arrived. The `Discarded (1 item)` tab next to it was the actual signal: the item did arrive and was rejected. Two different failure modes that look identical if you only watch one tab.
 
-**Thought the filter had dumped raw data into the output.** The `Kept` panel was showing a wall of JSON including a huge `content:encoded` HTML blob. Nothing was wrong: the output panel was in JSON view, and a Filter node never modifies items — it only decides which ones survive. Rows, not columns. Switching to Schema or Table view made it readable.
+**Thought the filter had dumped raw data into the output.** The `Kept` panel was showing a wall of JSON including a huge `content:encoded` HTML blob. Nothing was wrong: the output panel was in JSON view, and a Filter node never modifies items; it only decides which ones survive. Rows, not columns. Switching to Schema or Table view made it readable.
 
-**Only one item to test with.** RSS Feed Trigger returns only new items since the last poll. One item can't demonstrate a filter — you can't distinguish "works" from "passes everything." Swapping to RSS Read gave 25 items and a visible 1/24 split.
+**Only one item to test with.** RSS Feed Trigger returns only new items since the last poll. One item can't demonstrate a filter, because you can't distinguish "works" from "passes everything." Swapping to RSS Read gave 25 items and a visible 1/24 split.
 
-**Grabbed the wrong Webhook node.** n8n's **Webhook** node is an inbound door *into n8n* — it hands you a URL others call to start a workflow. A Discord webhook URL is an inbound door *into Discord*, which n8n calls. Both are "webhooks"; they point opposite directions. The right node is the **Discord** node with Authentication set to Webhook.
+**Grabbed the wrong Webhook node.** n8n's **Webhook** node is an inbound door *into n8n*: it hands you a URL others call to start a workflow. A Discord webhook URL is an inbound door *into Discord*, which n8n calls. Both are "webhooks"; they point opposite directions. The right node is the **Discord** node with Authentication set to Webhook.
 
 ---
 

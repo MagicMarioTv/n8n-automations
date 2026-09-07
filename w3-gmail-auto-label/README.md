@@ -9,11 +9,11 @@ The workflow is four nodes. The real work was OAuth.
 ## Quick start
 
 1. Import `workflow.json` into n8n.
-2. Create a Gmail OAuth2 credential (see **OAuth setup** below — the managed option does not work).
+2. Create a Gmail OAuth2 credential (see **OAuth setup** below; the managed option does not work).
 3. Create the target label in Gmail first, then select it in the Add Label node.
 4. Set the Gmail query and the filter condition to whatever you want to sort.
 
-**This workflow writes to a real inbox.** It only adds labels — no archive, no delete. Keep it that way while testing.
+**This workflow writes to a real inbox.** It only adds labels: no archive, no delete. Keep it that way while testing.
 
 ---
 
@@ -21,9 +21,9 @@ The workflow is four nodes. The real work was OAuth.
 
 | Node | What it does | Why |
 |---|---|---|
-| **Gmail — Get Many Messages** | Fetches messages matching a Gmail search query, capped at 5 | API-side filtering is cheaper and faster than pulling everything down |
+| **Gmail: Get Many Messages** | Fetches messages matching a Gmail search query, capped at 5 | API-side filtering is cheaper and faster than pulling everything down |
 | **Filter** | Keeps messages whose `From` contains the sender address | Workflow-side filtering, deliberately redundant here to practise the split |
-| **Gmail — Add Label** | Applies the label, once per item, using `{{ $json.id }}` | The node runs once per item; each execution needs its own message ID |
+| **Gmail: Add Label** | Applies the label, once per item, using `{{ $json.id }}` | The node runs once per item; each execution needs its own message ID |
 
 Sample run: **5 messages fetched, 4 kept, 4 labelled.**
 
@@ -31,7 +31,7 @@ Sample run: **5 messages fetched, 4 kept, 4 labelled.**
 
 ## Trade-offs
 
-**API-side vs workflow-side filtering.** The Gmail query could do all the narrowing itself, and in production it should — filtering at the API is cheaper and returns less data. The Filter node here is partly redundant. It stays because the split between what the API filters and what the workflow filters is a decision worth making consciously in every build, not a thing to do by habit.
+**API-side vs workflow-side filtering.** The Gmail query could do all the narrowing itself, and in production it should, because filtering at the API is cheaper and returns less data. The Filter node here is partly redundant. It stays because the split between what the API filters and what the workflow filters is a decision worth making consciously in every build, not a thing to do by habit.
 
 **Matching the sender address, not the display name.** `PlatformNotifications-noreply@google.com` rather than `Platform Notifications`. Display names are cosmetic and the sender can change them; the address is the stable identity.
 
@@ -43,7 +43,7 @@ Sample run: **5 messages fetched, 4 kept, 4 labelled.**
 
 ## Idempotency
 
-**Safe to re-run.** Gmail labels are idempotent — applying a label a message already carries is a no-op, so a second run changes nothing.
+**Safe to re-run.** Gmail labels are idempotent: applying a label a message already carries is a no-op, so a second run changes nothing.
 
 Worth contrasting with a bulk-comment automation I maintain at work, where posting the same note twice *does* duplicate it. That one needs a hash-keyed resume log to stay safe on re-run. Same question, opposite answer, because the underlying operation differs.
 
@@ -86,9 +86,9 @@ This is n8n-side and has been open for a long time ([#16249](https://github.com/
 
 **Filter discarded everything.** Condition was `From is equal to "Platform Notifications"`, but the field's real value is `Platform Notifications <PlatformNotifications-noreply@google.com>`. Exact equality never matched. Switched to `contains`.
 
-This is the second time I've made this exact mistake — the Week 1 build failed the same way. `is equal to` is almost never right against a field carrying more than the value you're looking for.
+This is the second time I've made this exact mistake. The Week 1 build failed the same way. `is equal to` is almost never right against a field carrying more than the value you're looking for.
 
-**Hardcoded the Message ID.** Typed a static ID into the Add Label node instead of an expression, which would have labelled one fixed message regardless of input. The fix is `{{ $json.id }}`. The underlying idea is that the node runs once per item and each execution gets its own `$json` — the same mechanic as `{{ $json.title }}` in the Week 1 filter, which I hadn't connected until it broke here.
+**Hardcoded the Message ID.** Typed a static ID into the Add Label node instead of an expression, which would have labelled one fixed message regardless of input. The fix is `{{ $json.id }}`. The underlying idea is that the node runs once per item and each execution gets its own `$json`, the same mechanic as `{{ $json.title }}` in the Week 1 filter, which I hadn't connected until it broke here.
 
 ---
 
