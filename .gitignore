@@ -21,3 +21,13 @@ venv/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Source data — real operational exports. NEVER commit these.
+# Added 9/6/2026 after four real Amazon region trackers were dropped into
+# w7-media-request-triage/. The repo is public; these files are not.
+*.xlsx
+*.xlsm
+*.xls
+*.xlsb
+*.csv
+_source_data*/
