@@ -124,18 +124,32 @@ None of this would be visible without the `reasoning` field. It costs about $0.0
 
 ### Cost
 
-**Measured so far:** one clean eval execution, 15 classifications, **13,933 total tokens** (n8n's Logs panel totals the whole run at the root of the AI call tree). That works out to ~929 tokens per classification.
+**Measured:** one clean eval execution, 15 classifications, **13,933 total tokens**. n8n's Logs panel totals the AI call tree at its root, which is the fast way to read it.
 
-⏳ **The input/output split is still outstanding**, and it matters, because input is $1/M and output is $5/M — a 5× difference. Until it's read, the honest statement is a bound rather than a figure:
+**Measured exemplar** (item 1, from `tokenUsage` on its `Anthropic Chat Model` call):
+
+| | Tokens |
+|---|---:|
+| `promptTokens` | 798 |
+| `completionTokens` | 93 |
+| **Total** | **891** |
+
+Input is **89.6%** of that call. Applying the same ratio to the run:
 
 ```
-if all 13,933 were input  → $0.0139 per run → $0.00093 per classification
-if all 13,933 were output → $0.0697 per run → $0.00465 per classification
+~12,479 input  ÷ 1,000,000 × $1 = $0.012479
+~1,454  output ÷ 1,000,000 × $5 = $0.007271
+                                  ≈ $0.01975 per run of 15
+                                  ≈ $0.00132 per classification
 ```
 
-The real number is inside that range. It gets closed before ship on 9/12 by reading `tokenUsage.promptTokens` / `completionTokens` off the `Anthropic Chat Model` sub-node calls. Not estimated in the meantime — see [w4-ai-email-digest](../w4-ai-email-digest), where a perfectly plausible estimate was off by 7% against the real measurement.
+⏳ **The per-call split is measured on 1 of 15 and extrapolated across the rest** — flagged rather than presented as a full measurement. The exact figure lands before ship by reading `tokenUsage` on all fifteen, or by running a single eval on a clean day and reading the input/output totals off the API console. The 13,933 grand total is exact either way, so the extrapolation only affects how it divides.
 
-**A comparison worth making once the split lands:** Week 4 measured ~686 input tokens per call, of which roughly 400 were JSON Schema boilerplate rather than content. This build's prompt carries a five-way taxonomy with definitions, so the fixed overhead should be higher — and it's paid on every one of the 15 items, because the cost scales with item count, not content length.
+**Roughly 28% more expensive per item than [w4-ai-email-digest](../w4-ai-email-digest)** at $0.00103/email — and the reason is worth stating, because it's the same lesson escalating.
+
+Item 1's variable content — requester, platform, live flag, and a 30-word request — is about 60 tokens. **The other ~738 input tokens are the prompt and schema**, which means roughly **92% of the input cost is fixed overhead paid identically on every call**, before a single word of the actual request. Week 4 measured about 58% on the same axis. The taxonomy bought that increase: five work types with written definitions, three urgency tiers, a tiebreaker rule, and a four-field JSON Schema all ride along on all fifteen calls.
+
+**The operational consequence:** cost here scales with *item count*, not with request length. A verbose request costs barely more than a terse one. That makes batching the obvious lever if this ever ran at volume — and it means the honest way to cut cost is to shorten the prompt, not to ask requesters to write less.
 
 ---
 
