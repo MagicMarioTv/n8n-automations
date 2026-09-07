@@ -116,7 +116,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const lines = $input.all().map(i => {\n  const d = i.json.output;\n  return `• ${d.sender} — ${d.summary}`;\n});\n\nreturn [{ json: { digest: `**Inbox digest — ${lines.length} messages**\\n\\n` + lines.join('\\n') } }];"
+        "jsCode": "const lines = $input.all().map(i => {\n  const d = i.json.output;\n  return `• ${d.sender}: ${d.summary}`;\n});\n\nreturn [{ json: { digest: `**Inbox digest, ${lines.length} messages**\\n\\n` + lines.join('\\n') } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
