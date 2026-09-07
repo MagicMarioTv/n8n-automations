@@ -96,6 +96,12 @@ model changed its urgency answer on: [8]   (1 of 15 items)
 
 So the headline number rose from 61.5% to 73.3%, and almost none of that is the rewrite working. **The rewritten definitions moved one answer out of fifteen.** Without the item-by-item comparison, this build would have reported a 12-point improvement it did not earn.
 
+**Two caveats that keep this comparison honest:**
+
+Items 4 and 13 had their `reference_date` changed between runs, so their inputs are not the same question. The only clean comparison is the **13 items whose input was identical**, and on those, type accuracy is **11/13 in both runs — unchanged**. Item 4's type flip (`caption_subtitle` → `qc_escalation`) is the reason the v2 headline reads 12/15 rather than 13/15, and it cannot be attributed to the prompt, because its input moved at the same time. That's a flaw in the run design, not a finding.
+
+And `standard` was never actually *tested* by the rewrite. The two items now labeled `standard` were answered `standard` by the model in v1 as well — the middle tier isn't something the new definitions produced, it's the value the model already over-applies. The v2 run says nothing about whether the model can identify a genuine 24–72 hour deadline.
+
 ### Why the model refuses `low`
 
 Its own reasoning field, verbatim:
@@ -185,5 +191,7 @@ The verdict string for a form submission is `"live submission"` — and **"sub*m
 **The v3 experiment** — split the mechanical criterion from the semantic one in the `low` definition and re-run the same 15. Current hypothesis: the model follows the vibe over the rule, so removing the vibe should recover the four remaining urgency misses. Cheap to test, and the eval makes it a single re-run.
 
 **Same 15 through a larger model**, both numbers side by side. About a dollar.
+
+**A note for whoever edits this next, including me:** `workflow.json` and `test-set.json` are **generated**, not hand-written — the source is `tools/build_w7_workflow.py` outside this repo. Edit the generator and re-run it; a hand-edit to the JSON will be silently overwritten, and generating is also why no commit here has ever needed `pinData` stripped.
 
 **Beyond this build.** The real trackers this vocabulary came from route by deterministic rule, and the rule engine is *correct* — an LLM asked to reproduce it would be slower, costlier and less reliable. The problem worth solving is the fallback bucket: the rows where the rule engine finds no matching status and hands a human a pile to work through by hand. That's a classification problem with no rule to copy, which is the opposite of this one, and it's the flagship's target.
