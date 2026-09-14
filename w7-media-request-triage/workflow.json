@@ -3,9 +3,8 @@
   "nodes": [
     {
       "parameters": {
-        "path": "media-request",
         "formTitle": "Media Request Intake",
-        "formDescription": "Submit a media operations request. Demo system: do not enter real or confidential information.",
+        "formDescription": "Submit a media operations request. Demo system -- do not enter real or confidential information.",
         "formFields": {
           "values": [
             {
@@ -18,8 +17,7 @@
               "requiredField": true
             },
             {
-              "fieldLabel": "Title or asset ID",
-              "requiredField": false
+              "fieldLabel": "Title or asset ID"
             },
             {
               "fieldLabel": "Target platform",
@@ -62,8 +60,7 @@
             },
             {
               "fieldLabel": "Needed by",
-              "fieldType": "date",
-              "requiredField": false
+              "fieldType": "date"
             },
             {
               "fieldLabel": "What do you need?",
@@ -72,27 +69,29 @@
             }
           ]
         },
-        "options": {}
+        "options": {
+          "path": "media-request"
+        }
       },
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.2,
       "position": [
-        0,
-        -224
+        1920,
+        352
       ],
-      "id": "a1f0c8e2-1b44-4d21-9d3a-1c7e5b0a3311",
+      "id": "47a0b0de-44ef-4c38-89ce-79ebb7bbb327",
       "name": "Media Request Form",
-      "webhookId": "3c2b7a10-9f55-4c8e-b6d2-4a1e9f70c522"
+      "webhookId": "c07303b2-613e-42c9-ab89-0a68d3481dc7"
     },
     {
       "parameters": {},
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        0,
-        224
+        1920,
+        800
       ],
-      "id": "b2e1d9f3-2c55-4e32-8a4b-2d8f6c1b4422",
+      "id": "661ced25-6197-4762-a44f-a001bd294144",
       "name": "Run Eval"
     },
     {
@@ -102,17 +101,14 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        224
+        2144,
+        800
       ],
-      "id": "c3d2eaf4-3d66-4f43-9b5c-3e9a7d2c5533",
+      "id": "c886870e-d400-44f3-a471-fded75c5e8cf",
       "name": "Test Set"
     },
     {
       "parameters": {
-        "mode": "manual",
-        "duplicateItem": false,
-        "includeOtherFields": false,
         "assignments": {
           "assignments": [
             {
@@ -188,10 +184,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        448,
-        0
+        2368,
+        576
       ],
-      "id": "d4e3fb05-4e77-4054-ac6d-4f0b8e3d6644",
+      "id": "31a700bc-cb62-43a9-b68e-f24abba1bc05",
       "name": "Normalize Request"
     },
     {
@@ -207,10 +203,10 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        688,
-        0
+        2608,
+        576
       ],
-      "id": "e5f40c16-5f88-4165-bd7e-500c9f4e7755",
+      "id": "2d69e5a3-5985-4236-b04c-fe93803d60b3",
       "name": "Classify Request"
     },
     {
@@ -226,14 +222,14 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
       "typeVersion": 1.5,
       "position": [
-        640,
-        240
+        2560,
+        816
       ],
-      "id": "f6051d27-6099-4276-ce8f-611daf5f8866",
+      "id": "a66c5d3d-c97e-44f1-bd64-41db5e26f43c",
       "name": "Anthropic Chat Model",
       "credentials": {
         "anthropicApi": {
-          "id": "qOCnKkDD4MGbhfUE",
+          "id": "5otvo0Iyz16H4EWj",
           "name": "Anthropic account"
         }
       }
@@ -246,11 +242,45 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        864,
-        240
+        2784,
+        816
       ],
-      "id": "07162e38-71aa-4387-df90-722ebf609977",
+      "id": "e2c77404-e9e9-4958-9117-8e44912cc43c",
       "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "bf42e5d9-fcd6-4f58-b19b-c17e963774a4",
+              "leftValue": "={{ $('Media Request Form').isExecuted }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2976,
+        576
+      ],
+      "id": "4cc2779a-1b6d-4d9a-a62d-c9ba0436ea0f",
+      "name": "Route By Source"
     },
     {
       "parameters": {
@@ -259,11 +289,335 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        960,
-        0
+        3216,
+        752
       ],
-      "id": "18273f49-82bb-4498-e0a1-833fc0710a88",
+      "id": "2d1df688-3d6e-43d2-befc-530c176e11ff",
       "name": "Score Against Labels"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "77fe6519-16a6-4b9d-adc6-3072fdf8cf7d",
+              "name": "name",
+              "value": "={{ $('Normalize Request').item.json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "4138aaf5-bd12-4d10-95d1-571d45d012c8",
+              "name": "email",
+              "value": "={{ $('Normalize Request').first().json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "9d07f4da-b605-4388-8e05-9fb1b3037216",
+              "name": "asset_id",
+              "value": "={{ $('Normalize Request').first().json.asset_id }}",
+              "type": "string"
+            },
+            {
+              "id": "2d0d8d4c-794d-4123-92d5-8a2d93b65cc2",
+              "name": "platform",
+              "value": "={{ $('Normalize Request').first().json.platform }}",
+              "type": "string"
+            },
+            {
+              "id": "679c51b3-2442-4bb7-88ea-97af4484131a",
+              "name": "is_live",
+              "value": "={{ $('Normalize Request').first().json.is_live }}",
+              "type": "string"
+            },
+            {
+              "id": "8f0ff5f5-b982-4b26-afc7-d6b13684252c",
+              "name": "needed_by",
+              "value": "={{ $('Normalize Request').first().json.needed_by }}",
+              "type": "string"
+            },
+            {
+              "id": "f337606c-c10c-44cf-bc3a-97e360258c77",
+              "name": "details",
+              "value": "={{ $('Normalize Request').first().json.details }}",
+              "type": "string"
+            },
+            {
+              "id": "20886e6d-dfa1-4d1c-a56d-863d648ff76e",
+              "name": "request_type",
+              "value": "={{ $json.output.request_type }}",
+              "type": "string"
+            },
+            {
+              "id": "c3e07419-8bf0-43f9-a3b9-8d3dcda2be04",
+              "name": "urgency",
+              "value": "={{ $json.output.urgency }}",
+              "type": "string"
+            },
+            {
+              "id": "23248e23-72f9-4c8e-8404-0547dbd571f9",
+              "name": "summary",
+              "value": "={{ $json.output.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "c65cb2d4-0eb1-4199-9505-486374312c24",
+              "name": "reasoning",
+              "value": "={{ $json.output.reasoning }}",
+              "type": "string"
+            },
+            {
+              "id": "eec94490-3826-476d-ab64-3e70a20506b9",
+              "name": "submitted_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        3216,
+        560
+      ],
+      "id": "f46e9f5d-016f-4813-8c93-e27a4aaab223",
+      "name": "Flatten For Approval"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#media-requests",
+          "mode": "name"
+        },
+        "message": "=*New media request*\n\n*Type:* {{ $json.request_type }}    *Urgency:* {{ $json.urgency }}\n*Requester:* {{ $json.name }}\n*Title / Asset ID:* {{ $json.asset_id }}\n*Platform:* {{ $json.platform }}  ·  *Already live:* {{ $json.is_live }}\n*Needed by:* {{ $json.needed_by }}\n\n*Summary:* {{ $json.summary }}\n*Classifier's reasoning:* {{ $json.reasoning }}\n\n_Original request:_\n>{{ $json.details }}",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        3440,
+        560
+      ],
+      "id": "b3d66c7e-a603-4270-a589-eb91e0aac4b4",
+      "name": "Request Approval",
+      "webhookId": "1b81a141-744a-4dec-a7b8-ec57e10c4f86",
+      "credentials": {
+        "slackApi": {
+          "id": "A5aesSaR36SpTURV",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ad0c419b-8b70-4863-aded-894bd9653d3f",
+              "leftValue": "={{ $json.data.approved }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3664,
+        560
+      ],
+      "id": "32183630-1bbb-4d21-9d9e-aeb6043328b2",
+      "name": "Approved?"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_YOUR_SPREADSHEET_ID",
+          "mode": "list",
+          "cachedResultName": "media-request-queue"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "timestamp": "={{ $('Flatten For Approval').first().json.submitted_at }}",
+            "requester": "={{ $('Flatten For Approval').first().json.name }}",
+            "asset_id": "={{ $('Flatten For Approval').item.json.asset_id }}",
+            "platform": "={{ $('Flatten For Approval').item.json.platform }}",
+            "request_type": "={{ $('Flatten For Approval').item.json.request_type }}",
+            "urgency": "={{ $('Flatten For Approval').item.json.urgency }}",
+            "summary": "={{ $('Flatten For Approval').item.json.summary }}",
+            "approved_by": "not captured",
+            "approved_at": "={{ $json.data.respondedAt }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "requester",
+              "displayName": "requester",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "asset_id",
+              "displayName": "asset_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "request_type",
+              "displayName": "request_type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "urgency",
+              "displayName": "urgency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "approved_by",
+              "displayName": "approved_by",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "approved_at",
+              "displayName": "approved_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3904,
+        496
+      ],
+      "id": "f58a74c1-62cc-45f4-90e7-b818829cb7d7",
+      "name": "Append to Queue",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "SP4GKtMhnAhcTKeV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#media-requests",
+          "mode": "name"
+        },
+        "text": "=:x: *Request denied.* Nothing was written to the queue.\n\n*Requester:* {{ $('Flatten For Approval').first().json.name }}\n*Title / Asset ID:* {{ $('Flatten For Approval').first().json.asset_id }}\n*Classified as:* {{ $('Flatten For Approval').first().json.request_type }} / {{ $('Flatten For Approval').first().json.urgency }}\n*Denied at:* {{ $json.data.respondedAt }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.7,
+      "position": [
+        3824,
+        752
+      ],
+      "id": "2f6c0e4e-8911-4b53-8a51-4f3fd3a4f5b6",
+      "name": "Post Denial Note",
+      "webhookId": "c5ebcea5-1ea1-40f0-b4d2-bc9adcf80014",
+      "credentials": {
+        "slackApi": {
+          "id": "A5aesSaR36SpTURV",
+          "name": "Slack account"
+        }
+      }
     }
   ],
   "connections": {
@@ -337,7 +691,65 @@
       "main": [
         [
           {
+            "node": "Route By Source",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route By Source": {
+      "main": [
+        [
+          {
+            "node": "Flatten For Approval",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
             "node": "Score Against Labels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Flatten For Approval": {
+      "main": [
+        [
+          {
+            "node": "Request Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request Approval": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Append to Queue",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Post Denial Note",
             "type": "main",
             "index": 0
           }
