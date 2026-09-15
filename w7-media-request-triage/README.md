@@ -6,7 +6,7 @@ The build shipped **2026-09-14**, two days after the 2026-09-12 target, and the 
 
 Two findings carry this build, and neither is the accuracy number.
 
-**The classifier states a rule and violates it in the same sentence, and it does so on live traffic.** The eval surfaced it first. Then two real form submissions, written by nobody with a test set in mind, produced the identical false statement. That moves the finding from "a property of my fifteen items" to "a property of this classifier."
+**The classifier states a rule and violates it in the same sentence, and it does so on live traffic.** The eval surfaced it first. Then three real form submissions, written by nobody with a test set in mind, produced the identical false statement. That moves the finding from "a property of my fifteen items" to "a property of this classifier."
 
 **Four bugs in one session were all the same habit.** A name written down in one place and retyped somewhere else. Every one of them failed silently or near-silently, including a public form URL that had been recorded as working for eight days and had never once served a page.
 
@@ -28,7 +28,12 @@ You need a running n8n instance reachable over HTTPS (this runs on a VPS at `n8n
 
 1. Import `workflow.json` (⋯ → Import from File).
 2. **Anthropic:** open **Anthropic Chat Model** and select your own credential. The credential ID in the export will not resolve on your instance.
-3. **Slack:** a Slack app in a workspace you own, with bot scopes `chat:write` and `chat:write.public`. The second one is what lets the bot post to a channel it was never invited to. Without it you get `not_in_channel`.
+3. **Slack:** an app in a workspace you own. This is the fiddliest step and every part of it fails silently, so all five:
+   - Bot scopes `chat:write`, `chat:write.public`, `users:read`, `users:read.email`. The second lets the bot post to a channel it was never invited to, without which you get `not_in_channel`. The last two resolve who approved.
+   - **Reinstall to Workspace** after adding scopes. Scopes added post-install do nothing until you reinstall, and the symptom is missing output fields rather than an error.
+   - **Socket Mode off.** If it is on, Slack hides the Request URL field entirely and tells you that you do not need one. You do: Socket Mode is the workaround for apps that cannot receive inbound traffic, and this one can.
+   - **Interactivity & Shortcuts** on, Request URL `https://<your-host>/webhook-waiting-slack`. One fixed endpoint per instance, not per node. Slack permits one Request URL per app.
+   - The app's **Signing Secret** (Basic Information) pasted into the **Signature Secret** field of the n8n Slack credential. Without it n8n rejects Slack's callback as unverified and the workflow waits forever with nothing logged.
 4. **Google Sheets:** enable **both** the Google Sheets API *and* the Google Drive API in your Cloud project. Sheets is for reading and writing cells; Drive is what populates the document picker. Enabling only Sheets gives you a `403 Forbidden` on a dropdown that has not touched your data yet. If you would rather not grant Drive at all, switch the Document field to **By URL** and paste the spreadsheet link.
 5. Create the destination sheet with this header row: `timestamp`, `requester`, `asset_id`, `platform`, `request_type`, `urgency`, `summary`, `approved_by`, `approved_at`. Then open **Append to Queue** and pick your own document from the dropdown: the committed `documentId` is the literal string `REPLACE_WITH_YOUR_SPREADSHEET_ID`, scrubbed deliberately because the real one points at a private file in a private Drive. The generator fails the build if it ever reappears.
 6. **Run the eval:** click **Run Eval** → Execute step. Fifteen classifications, scored against the labels, in about a minute. Touches no credential but Anthropic.
@@ -80,7 +85,7 @@ Step 7 says **publish**, not save. This n8n publishes a *version*: edits to the 
 | **Structured Output Parser** | JSON Schema with `enum` on both classification fields | Enforced as a tool definition, not requested in prose. `request_type` is structurally incapable of returning anything outside the five values. |
 | **Route By Source** | IF node on `{{ $('Media Request Form').isExecuted }}` | Splits the paths back apart so only real submissions reach Slack. This asks a question about the *run*, not about the item, so it never touches paired-item tracking. The obvious alternative, testing a field on the item, has to trace each item back through the AI chain, and `Score Against Labels` already carries a fallback for that going wrong. |
 | **Flatten For Approval** | Set node, twelve fields, one item | The LLM chain emits `{output: {...}}` and **discards its input**. After classification the requester's name no longer exists on the item. This node reaches back to `Normalize Request` once and produces a flat item, so nothing downstream has to reach through the chain twice. |
-| **Request Approval** | Slack, Send and Wait for Response, approve and decline | The execution parks here indefinitely. The buttons resolve by calling back to this instance's own webhook, which works only because the VPS has a real domain, real TLS, and `N8N_WEBHOOK_URL` set. Unbuildable on localhost, which makes this [w6-vps-deploy](../w6-vps-deploy) paying off. |
+| **Request Approval** | Slack, Send and Wait for Response, approve and decline, `captureResponder` on | The execution parks here indefinitely. Slack posts the decision back to `/webhook-waiting-slack` on this instance and signs it, so the approval carries a verified identity. Both directions of that need a real domain, real TLS and `N8N_WEBHOOK_URL`, which makes this [w6-vps-deploy](../w6-vps-deploy) paying off twice: the gate is unbuildable on localhost, and so is the thing that authenticates it. |
 | **Approved?** | IF node on `{{ $json.data.approved }}`, Boolean is true | A real boolean, not the string `"true"`. Verified by reading the node's output rather than trusting the docs. |
 | **Append to Queue** | Google Sheets, Append Row | Eight of its nine values reach back to `Flatten For Approval`; only `approved_at` reads `$json`, because the Slack node emits the decision and nothing else. |
 | **Post Denial Note** | Slack, Send a message | Same split for the same reason. A denial writes nothing and says so out loud, which is the point of having a gate. |
@@ -165,7 +170,7 @@ audio and captions; deadline 2026-09-18 is 4 days away, falling within 24-72
 hour standard window.
 ```
 
-Ninety-six hours, described as inside a seventy-two hour window. **Twice, on two separate live submissions, neither written as a test case.** Same shape as the eval: the arithmetic is stated correctly and the conclusion contradicts it.
+Ninety-six hours, described as inside a seventy-two hour window. **Three times, on three separate live submissions, none written as a test case.** Same shape as the eval: the arithmetic is stated correctly and the conclusion contradicts it.
 
 The fault is in the definition:
 
@@ -217,17 +222,23 @@ The approval gate and the queue add **zero** model cost. Slack and Sheets calls 
 
 **A public form with no authentication.** The definition of done requires a live URL a stranger can use, and auth would defeat that. The cost is that anyone who finds the URL can submit, and every submission costs an API call and a Slack message. Acceptable for a portfolio demo; production needs a rate limit and a captcha at minimum. The form carries a visible warning not to enter real or confidential information.
 
-**The approval link is a capability URL.** Clicking approve navigates to something like:
+**The approval used to be a capability URL. It is not any more, and the difference is worth reading.** The first version of this gate sent buttons that were ordinary links:
 
 ```
 /webhook-waiting/8/b3d66c7e-...?approved=true&signature=1886696948d8b2bc...
 ```
 
-The signature is what stops someone editing `approved=true` by hand and having n8n believe it. What it does not do is authenticate *who* is clicking. Anyone holding the link can approve, and the link is sitting in a Slack channel. For a portfolio demo where the channel has one member that is fine. In production the control is channel membership, and that should be a stated fact rather than an accident.
+n8n generated that URL, signed it, and verified its own signature when the browser came back. The signature stops someone editing `approved=true` by hand. It does **not** authenticate who is clicking, so anyone holding the link could approve, and the link sat in a Slack channel.
+
+Turning on `captureResponder` reverses the direction of trust. Slack now makes the call, to a fixed endpoint on this instance, and signs the request with the app's signing secret; n8n verifies it and rejects anything that fails. The identity of the clicker comes from Slack's own interaction payload rather than from possession of a URL.
+
+So the control moved from "who has the link" to "who is in the workspace", which is a real improvement and not a cosmetic one. The residual exposure is the endpoint itself: `/webhook-waiting-slack` is public, and the signing secret is the only thing standing in front of it. That is the right shape, and it is worth naming rather than assuming.
+
+**The queue records a handle, not an email.** The responder payload carries `id`, `name`, `username` and `email`. `approved_by` stores `name`. The email is the better identifier for a real ops queue, since a handle can change and an address usually cannot, but it is a personal address and this sheet is a portfolio artifact. The handle goes in the queue; the email stays in the execution data where it is available if it were ever genuinely needed.
 
 **The execution waits indefinitely, by choice.** Limit Wait Time is off. A media request nobody has looked at has not stopped being a real request, and auto-declining after an hour would discard work silently, which is worse than a queue that grows. The cost is that a stalled request **fails silently**: no error, no alert, nothing in a log, indistinguishable from one still under consideration. The missing piece is not a timeout, it is a reminder, and that is named under Next rather than pretended away. Also worth knowing: "indefinitely" is bounded by n8n's execution pruning, so a waiting execution is not immortal.
 
-**Approver identity is not captured.** Slack's **Capture Who Responded** is off, so the buttons are links that open a browser tab rather than true in-Slack interactive buttons, and no identity is recorded. That was a deliberate sequencing call: capture requires an Interactivity Request URL configured in the Slack app, which is another moving part in a build that was already two days late. The `approved_by` column therefore reads the literal string `not captured`, which states the gap in the data instead of leaving a blank cell that looks like a bug. Turning it on is the first item under Next.
+**The gate was built in two passes, on purpose.** Pass one shipped with `captureResponder` off, because capture needs four other things configured and every one of them fails silently. Getting the round trip working with the fewest moving parts, then adding identity as a separate change, is the same one-variable-at-a-time discipline that the v1 to v2 eval run failed to follow and got punished for. The intermediate state was honest about itself: `approved_by` held the literal string `not captured` rather than a blank cell that would have read as a bug.
 
 **One enum value per request when reality overlaps.** Item 3 contains both a synopsis error and an audio dropout. The prompt resolves this with *"classify the one that blocks delivery,"* which makes the behaviour specified and defensible rather than arbitrary. It still collapses a two-problem request into one label, and the second problem is silently dropped. A `secondary_type` field is the obvious extension.
 
@@ -296,6 +307,16 @@ The fix exposed a second one. The mapping key was `"summary "`, with a trailing 
 
 Neither raised an error. A Google Sheets append succeeds whether or not you gave it everything you meant to.
 
+### Slack said the Request URL was not needed, and it was wrong for this use
+
+Turning on `captureResponder` requires an Interactivity Request URL in the Slack app. The field was not there. In its place:
+
+> Socket Mode is enabled. You won't need to specify a Request URL.
+
+Socket Mode and Request URL are two mutually exclusive delivery mechanisms. Socket Mode has the app dial **out** and hold a WebSocket that Slack pushes events down. A Request URL has Slack POST **in** to a public HTTPS endpoint. Socket Mode exists for apps that cannot receive inbound traffic: running on a laptop, behind NAT, no domain, no TLS.
+
+n8n does not hold a Slack WebSocket. It sits at `/webhook-waiting-slack` waiting to be called, so it needs the inbound path, and Slack hides that field whenever Socket Mode is on. Turning Socket Mode off is not a downgrade here; it is the whole reason [w6-vps-deploy](../w6-vps-deploy) exists. The message was accurate about Slack and wrong about this workflow.
+
 ### `403 Forbidden` from a dropdown that had not touched any data
 
 The Google Sheets document picker failed with:
@@ -332,7 +353,6 @@ The verdict string for a form submission is `"live submission"`, and **"sub*miss
 - **The model still will not produce `low` for dated requests**, and now demonstrably not on live traffic either. Unfixed, deliberately: the diagnosis is more useful right now than a patched prompt.
 - **No holdout.** The v2 definitions were written after seeing the v1 results, on the same 15 items. The v2 score measures fit, not generalization.
 - **Live submissions are never scored.** The eval path is measured; the production path is not. Nothing checks whether the classifier is right about a real request, and nothing ever tells it when it was wrong.
-- **Approver identity is not recorded.** `approved_by` reads `not captured` on every row.
 - **A stalled request is invisible.** No timeout, no reminder, no alert. It waits, and it looks exactly like a request still being considered.
 - **`qc_escalation` appears once** in the test set. One example says nothing about that class, and its boundary with `caption_subtitle` and `redelivery_fix` is where both remaining type misses live.
 - **Nonsense input is unhandled.** Submit "asdf" and the classifier confidently returns an enum value, because the schema requires one. There is no "cannot classify" escape hatch.
@@ -344,8 +364,6 @@ The verdict string for a form submission is `"live submission"`, and **"sub*miss
 ## Next
 
 **The two open definition-of-done items.** A three to five minute walkthrough video, submission through to the row landing, and one written post. Neither is code, both are the project's own criteria, and it is not closed until they exist.
-
-**Capture Who Responded.** Turn it on, configure the Slack app's Interactivity Request URL to point at this instance, and `approved_by` stops being a literal string. It also swaps the browser-tab approval for true in-Slack buttons, which is both a better demo and a tighter loop.
 
 **The v3 experiment.** Split the mechanical criterion from the semantic one in the `low` definition and re-run the same 15. Current hypothesis: the model follows the vibe over the rule, so removing the vibe should recover the remaining urgency misses. Cheap to test, the eval makes it a single re-run, and there are now live submissions to check it against as well.
 

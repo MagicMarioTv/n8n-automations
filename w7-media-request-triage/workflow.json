@@ -399,6 +399,7 @@
             "approvalType": "double"
           }
         },
+        "captureResponder": true,
         "options": {}
       },
       "type": "n8n-nodes-base.slack",
@@ -476,7 +477,7 @@
             "request_type": "={{ $('Flatten For Approval').item.json.request_type }}",
             "urgency": "={{ $('Flatten For Approval').item.json.urgency }}",
             "summary": "={{ $('Flatten For Approval').item.json.summary }}",
-            "approved_by": "not captured",
+            "approved_by": "={{ $json.data.responder.name }}",
             "approved_at": "={{ $json.data.respondedAt }}"
           },
           "matchingColumns": [],
