@@ -4,7 +4,7 @@
     {
       "parameters": {
         "formTitle": "Media Request Intake",
-        "formDescription": "Submit a media operations request. Demo system -- do not enter real or confidential information.",
+        "formDescription": "Submit a media operations request. Demo system: do not enter real or confidential information",
         "formFields": {
           "values": [
             {
