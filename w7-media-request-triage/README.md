@@ -2,7 +2,9 @@
 
 **Project 1.** A public intake form for media operations requests, classified by an LLM into a work type and an urgency level, held at a human approval gate in Slack, and written to a queue only once a person has said yes.
 
-The build shipped **2026-09-14**, two days after the 2026-09-12 target, and the slip is recorded rather than smoothed over: the Saturday build block did not run, and the week that contained it produced no commits at all. Two of the project's five definition-of-done items, a walkthrough video and a written post, are still outstanding and are listed under Next. The code is finished; the project is not closed by its own definition.
+**▶ [Four and a half minute walkthrough](https://www.loom.com/share/707c524b660a4813927403be195a0c13)**, submission through to the row landing, including a live misclassification and why it is unpatched.
+
+The build shipped **2026-09-14**, two days after the 2026-09-12 target, and the slip is recorded rather than smoothed over: the Saturday build block did not run, and the week that contained it produced no commits at all. The walkthrough was recorded 2026-09-15. One of the project's five definition-of-done items, a written post, is still outstanding and is listed under Next.
 
 Two findings carry this build, and neither is the accuracy number.
 
@@ -363,7 +365,7 @@ The verdict string for a form submission is `"live submission"`, and **"sub*miss
 
 ## Next
 
-**The two open definition-of-done items.** A three to five minute walkthrough video, submission through to the row landing, and one written post. Neither is code, both are the project's own criteria, and it is not closed until they exist.
+**The one open definition-of-done item.** A written post. The walkthrough video landed 2026-09-15 and is linked at the top. The post is not code, it is the project's own criterion, and the project is not closed until it exists.
 
 **The v3 experiment.** Split the mechanical criterion from the semantic one in the `low` definition and re-run the same 15. Current hypothesis: the model follows the vibe over the rule, so removing the vibe should recover the remaining urgency misses. Cheap to test, the eval makes it a single re-run, and there are now live submissions to check it against as well.
 
