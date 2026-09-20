@@ -1,0 +1,326 @@
+{
+  "name": "W8 - Content Ops Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "authentication": "none",
+        "options": {
+          "title": "Content Ops Assistant",
+          "subtitle": "Asset lookups, encoding math, format questions. Demo system with invented data."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "34ff8363-a752-435a-a191-01677e94ca1b",
+      "name": "When chat message received",
+      "webhookId": "04e3737d-b6ac-4239-9b92-cf98d541a353"
+    },
+    {
+      "parameters": {
+        "promptType": "auto",
+        "options": {
+          "systemMessage": "You are an operations assistant for a streaming content team. You answer questions about asset status, encoding math and delivery formats.\n\nYou have three tools. Use them. Do not guess.\n\n1. calculator: use it for every arithmetic step, including unit conversions. Never do arithmetic in your head, even when it looks easy. Show the formula in your answer.\n2. asset_catalog: use it whenever a question mentions an asset ID (format TT-NNNN, for example TT-0142). It returns asset_id, title, type, duration_min (minutes), mezzanine_bitrate_mbps (megabits per second), platform, status and deadline. Never invent asset details. If the catalog returns a 503, call it again with the same ID, up to two more times. On any other error, or if the 503 persists, quote the exact error text and stop. Do not make up a value and do not suggest a similar ID.\n3. wiki_summary: use it only for general factual questions about codecs, formats and standards. Never use it for asset questions. If it returns an error, say that you could not check the source and that the answer is from memory.\n\nConventions:\n- File size in megabits = duration in seconds x bitrate in Mbps. Divide by 8 for megabytes, then by 1000 for gigabytes (decimal GB).\n- Transfer time in seconds = file size in megabits / link speed in Mbps.\n- Always state units. Round to one decimal place.\n- Keep answers short: the result, the formula, and the tool values you used.",
+          "maxIterations": 6,
+          "returnIntermediateSteps": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        320,
+        0
+      ],
+      "id": "38f89273-9bc7-491d-bb1f-8bcdce6db5f9",
+      "name": "Ops Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        200,
+        260
+      ],
+      "id": "8cb8122b-7771-4c94-922e-3bcb349f02ea",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "5otvo0Iyz16H4EWj",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 5
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        380,
+        260
+      ],
+      "id": "ac3cf78a-7220-48f8-ad6a-de030615e063",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        560,
+        260
+      ],
+      "id": "af451e93-c3b1-43b8-ad69-af209562f272",
+      "name": "calculator"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Looks up one asset in the content operations catalog by its asset ID (format TT-NNNN). Returns JSON with asset_id, title, type, duration_min, mezzanine_bitrate_mbps, platform, status and deadline. Returns HTTP 404 when the ID does not exist.",
+        "url": "https://n8n.mariomoreno.dev/webhook/asset-catalog",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "id",
+              "value": "={{ $fromAI('asset_id', 'The asset ID to look up, format TT-NNNN', 'string') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        740,
+        260
+      ],
+      "id": "8bd9724b-c88e-4bbf-8d44-b39fe3a16939",
+      "name": "asset_catalog",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "path": "ops-agent-baseline",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        640
+      ],
+      "id": "2585e27e-0671-4c97-9048-16233b1c1dd9",
+      "name": "Run Baseline",
+      "webhookId": "c25bddb5-efce-4586-a57f-baedba3d7d40"
+    },
+    {
+      "parameters": {
+        "jsCode": "// The same three questions the agent gets, so the two runs can be compared on answers and on tokens.\n// No tools on this path: whatever the model says here, it said from memory.\nconst questions = [\n  'A 1 hour 52 minute feature at 22.7 Mbps. How many gigabytes is the mezzanine file, and how many minutes does the transfer take at 185 Mbps?',\n  'What is the status and deadline of TT-0142, and is it on Max or Discovery+?',\n  'How long will the mezzanine for TT-0142 take to transfer at 150 Mbps?',\n];\nreturn questions.map((q, i) => ({ json: { n: i + 1, question: q } }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        640
+      ],
+      "id": "30d71753-19c3-4ce4-980f-e06133b7a717",
+      "name": "Baseline Questions"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.question }}",
+        "messages": {
+          "messageValues": [
+            {
+              "type": "SystemMessagePromptTemplate",
+              "message": "You are an operations assistant for a streaming content team. You answer questions about asset status, encoding math and delivery formats.\n\nConventions:\n- File size in megabits = duration in seconds x bitrate in Mbps. Divide by 8 for megabytes, then by 1000 for gigabytes (decimal GB).\n- Transfer time in seconds = file size in megabits / link speed in Mbps.\n- Always state units. Round to one decimal place.\n- Keep answers short: the result, the formula, and the values you used."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        480,
+        640
+      ],
+      "id": "f2880096-f6dd-450f-9743-e7f61cf3ad0c",
+      "name": "Answer Without Tools"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        520,
+        880
+      ],
+      "id": "4d9e45c3-087b-478c-88a9-8d4e9478b7dd",
+      "name": "Anthropic Chat Model (baseline)",
+      "credentials": {
+        "anthropicApi": {
+          "id": "5otvo0Iyz16H4EWj",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Fetches the summary paragraph of one English Wikipedia article by title. Use it only for general questions about codecs, formats and standards, for example AV1, High Efficiency Video Coding, Dolby Vision. Never use it for asset IDs.",
+        "url": "=https://en.wikipedia.org/api/rest_v1/page/summary/{{ encodeURIComponent($fromAI(\"title\", \"The Wikipedia article title to look up, for example AV1 or High Efficiency Video Coding\", \"string\")) }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "w8-ops-agent/1.0 (portfolio demo; github.com/MagicMarioTv)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        920,
+        260
+      ],
+      "id": "75447b0a-7850-4fb7-9f1d-d1d18ae78b36",
+      "name": "wiki_summary",
+      "onError": "continueRegularOutput"
+    }
+  ],
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Ops Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Ops Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Ops Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ops Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "asset_catalog": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ops Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Baseline": {
+      "main": [
+        [
+          {
+            "node": "Baseline Questions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baseline Questions": {
+      "main": [
+        [
+          {
+            "node": "Answer Without Tools",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model (baseline)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer Without Tools",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wiki_summary": {
+      "ai_tool": [
+        [
+          {
+            "node": "Ops Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}

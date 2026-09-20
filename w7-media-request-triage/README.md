@@ -2,7 +2,7 @@
 
 **Project 1, complete.** A public intake form for media operations requests, classified by an LLM into a work type and an urgency level, held at a human approval gate in Slack, and written to a queue only once a person has said yes.
 
-**▶ [Four and a half minute walkthrough](https://www.loom.com/share/707c524b660a4813927403be195a0c13)**, submission through to the row landing, including a live misclassification and why it is unpatched.
+**▶ [Four and a half minute walkthrough](https://www.loom.com/share/707c524b660a4813927403be195a0c13)**, submission through to the row landing, including a live misclassification and why it is unpatched. The [LinkedIn post](https://lnkd.in/p/ebpFitpK) that closed the project is the short version.
 
 The build shipped **2026-09-14**, two days after the 2026-09-12 target, and the slip is recorded rather than smoothed over: the Saturday build block did not run, and the week that contained it produced no commits at all. The walkthrough was recorded and the post published on 2026-09-15, which closed the last of the five definition-of-done items: live URL, repo and README, one metric, a walkthrough, a post.
 

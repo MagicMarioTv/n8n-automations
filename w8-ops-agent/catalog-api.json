@@ -1,0 +1,79 @@
+{
+  "name": "W8 - Asset Catalog API (mock)",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "asset-catalog",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8b4d17e6-942d-4729-900d-6a6ae2399070",
+      "name": "Catalog Request",
+      "webhookId": "542ade5d-f590-49a0-9cb9-cf53bb074a24"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Mock asset catalog. Every title and ID here is invented.\n// Returns { status, body } and lets Respond to Webhook turn that into a real HTTP response.\n\nconst catalog = {\n  'TT-0142': { asset_id: 'TT-0142', title: 'Harbor Lights S02E07',   type: 'episode', duration_min: 47,  mezzanine_bitrate_mbps: 8,    platform: 'Max',        status: 'qc_hold',   deadline: '2026-09-25' },\n  'TT-0217': { asset_id: 'TT-0217', title: 'The Quiet Meridian',     type: 'feature', duration_min: 112, mezzanine_bitrate_mbps: 22.7, platform: 'Max',        status: 'encoding',  deadline: '2026-10-02' },\n  'TT-0288': { asset_id: 'TT-0288', title: 'Salt Flats S01E01',      type: 'episode', duration_min: 52,  mezzanine_bitrate_mbps: 8,    platform: 'Discovery+', status: 'delivered', deadline: '2026-09-12' },\n  'TT-0301': { asset_id: 'TT-0301', title: 'Salt Flats S01E02',      type: 'episode', duration_min: 49,  mezzanine_bitrate_mbps: 8,    platform: 'Discovery+', status: 'delivered', deadline: '2026-09-12' },\n  'TT-0356': { asset_id: 'TT-0356', title: 'Night Kitchen 30s promo', type: 'promo',  duration_min: 0.5, mezzanine_bitrate_mbps: 15,   platform: 'Both',       status: 'ingested',  deadline: '2026-09-22' },\n  'TT-0410': { asset_id: 'TT-0410', title: 'Orbital Decay trailer',  type: 'trailer', duration_min: 2.5, mezzanine_bitrate_mbps: 15,   platform: 'Both',       status: 'qc_hold',   deadline: '2026-09-21' },\n  'TT-0477': { asset_id: 'TT-0477', title: 'Harbor Lights S02E08',   type: 'episode', duration_min: 45,  mezzanine_bitrate_mbps: 8,    platform: 'Max',        status: 'ingested',  deadline: '2026-10-01' },\n  'TT-0503': { asset_id: 'TT-0503', title: 'Copper Canyon S03E04',   type: 'episode', duration_min: 44,  mezzanine_bitrate_mbps: 8,    platform: 'Discovery+', status: 'encoding',  deadline: '2026-09-30' },\n  'TT-0619': { asset_id: 'TT-0619', title: 'The Long Thaw',          type: 'feature', duration_min: 96,  mezzanine_bitrate_mbps: 22.7, platform: 'Max',        status: 'delivered', deadline: '2026-08-30' },\n  'TT-0731': { asset_id: 'TT-0731', title: 'Night Kitchen S01E05',   type: 'episode', duration_min: 28,  mezzanine_bitrate_mbps: 8,    platform: 'Both',       status: 'encoding',  deadline: '2026-09-28' },\n};\n\nconst id = String($input.first().json.query.id || '').trim().toUpperCase();\n\n// 400: the caller left out the one parameter this endpoint needs\nif (!id) {\n  return [{ json: { status: 400, body: { error: 'missing required query parameter: id' } } }];\n}\n\n// 500: this ID always fails, on purpose. It exists to test what the agent does with a hard failure.\nif (id === 'TT-0500') {\n  return [{ json: { status: 500, body: { error: 'upstream MAM timeout', asset_id: id } } }];\n}\n\n// 503: this ID fails two calls out of every three, on purpose, so a retry has something to recover from.\n// The counter lives in workflow static data, which only persists for production executions of an active workflow.\nif (id === 'TT-0503') {\n  const state = $getWorkflowStaticData('global');\n  state.calls = (state.calls || 0) + 1;\n  if (state.calls % 3 !== 0) {\n    return [{ json: { status: 503, body: { error: 'MAM busy, retry later', asset_id: id, attempt: state.calls } } }];\n  }\n}\n\nconst asset = catalog[id];\n\n// 404: a well-formed request for something that does not exist\nif (!asset) {\n  return [{ json: { status: 404, body: { error: 'asset not found', asset_id: id } } }];\n}\n\nreturn [{ json: { status: 200, body: asset } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "id": "f7673474-5ed3-4599-ae15-8055e9dc18e7",
+      "name": "Look Up Asset"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json.body) }}",
+        "options": {
+          "responseCode": "={{ $json.status }}"
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        0
+      ],
+      "id": "272aa483-0567-4a63-8311-24dcb12ec216",
+      "name": "Send Response"
+    }
+  ],
+  "connections": {
+    "Catalog Request": {
+      "main": [
+        [
+          {
+            "node": "Look Up Asset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Look Up Asset": {
+      "main": [
+        [
+          {
+            "node": "Send Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}
