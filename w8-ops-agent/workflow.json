@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "public": true,
+        "public": false,
         "authentication": "none",
         "options": {
           "title": "Content Ops Assistant",

@@ -40,14 +40,14 @@ Two workflows. Import the catalog first, because the agent calls it.
 
 - Import from file. Select your Anthropic credential on both `Anthropic Chat Model` nodes.
 - On `asset_catalog`, change the URL's hostname to your instance if it is not `n8n.mariomoreno.dev`.
-- On `When chat message received`, **Authentication** is `none` in the committed file because the build was tested by posting to the endpoint from a script. Set it to **Basic Auth** with a credential before leaving it public. A public form costs nothing when strangers find it; a public agent costs tokens per message.
-- Publish. Open the chat URL the trigger shows you. Ask: `What is the status and deadline of TT-0142?`
+- `When chat message received` is committed with **Make Chat Publicly Available off** and **Authentication** `none`. That is deliberate: the build was measured by posting to the public endpoint from a script, and the endpoint was closed again afterwards. To use the hosted chat page, set Authentication to **Basic Auth** with a credential first, then turn public on. A public form costs nothing when strangers find it; a public agent costs tokens per message.
+- Publish. Open the chat from the editor (or the public URL once gated). Ask: `What is the status and deadline of TT-0142?`
 
 **3. The baseline**, optional: `GET https://<your-instance>/webhook/ops-agent-baseline` runs the three questions through the no-tools chain. The response carries the first answer; all three are in the execution record.
 
 The ten asset IDs in the catalog: `TT-0142`, `TT-0217`, `TT-0288`, `TT-0301`, `TT-0356`, `TT-0410`, `TT-0477`, `TT-0503`, `TT-0619`, `TT-0731`. Two special ones: `TT-0500` always returns HTTP 500, and `TT-0503` returns HTTP 503 on two calls out of every three, then succeeds on the third.
 
-The whole build was driven through the n8n public API rather than the canvas: both workflows created with `POST /api/v1/workflows`, activated with `POST /workflows/{id}/activate`, updated in place with `PUT` between experiments. Seven versions of the agent were published that way in one evening, and the export confirms `versionId` equals `activeVersionId`, so what is committed is what is serving.
+The whole build was driven through the n8n public API rather than the canvas: both workflows created with `POST /api/v1/workflows`, activated with `POST /workflows/{id}/activate`, updated in place with `PUT` between experiments. Nine versions of the agent were published that way in one evening, and the export confirms `versionId` equals `activeVersionId`, so what is committed is what is serving.
 
 ---
 
@@ -144,7 +144,7 @@ Config C gets both by moving the retry into the prompt, and the price is exactly
 
 **The chat gate.** w7's form is public with no auth because strangers submitting requests is what an intake form is for. This agent is different: every message costs money and any tool it has can be driven by whoever types. The committed trigger has `authentication: none` because the build was tested by script; Basic Auth is one dropdown away and is the minimum before leaving it up. The general rule: a public surface that spends per request needs a gate, and the cheapest gate is the right one until it isn't.
 
-**`maxIterations: 6`.** The cap is a cost ceiling, not a feature. Each iteration here is roughly 1,300 to 2,500 prompt tokens, so the worst case per message is about 15,000 tokens, or two cents. Without a cap, a model that keeps calling a failing tool is an open loop on your API bill. The seventh iteration does not happen; the agent stops and returns what it has.
+**`maxIterations: 6`.** The cap is a cost ceiling, not a feature. Each iteration here is roughly 1,300 to 2,500 prompt tokens, so the worst case per message is about 15,000 tokens, or two cents. Without a cap, a model that keeps calling a failing tool is an open loop on your API bill. What happens at the cap was tested, not assumed, by setting it to 1 and asking the four-turn question: the agent answered with the literal string `Agent stopped due to max iterations.`, HTTP 200, execution status **success**. It did not return what it had (the catalog result was already in hand). So the cap protects the bill and nothing else: the user gets a non-answer, and monitoring sees a green run. Anything downstream of this agent has to check the output text for that sentence, because nothing else flags it.
 
 **Memory window of 5.** Follow-ups work. The cost is that the whole window is re-sent on every LLM call in every subsequent message, so a long session gets more expensive per message, not less. Five is enough for "and at 100 Mbps?" and not enough to make the tenth message cost triple.
 
@@ -205,6 +205,14 @@ on both lookups (`HEVC codec`, `AV1 codec`), `observation: ""`, and then a fluen
 
 **6. The baseline webhook returned one answer, not three.** `Respond: last node` returns the first item by default. All three answers were in the execution record, which is where the numbers in this README came from anyway. Not fixed, because the execution record is the right source.
 
+**7. Hitting the iteration cap is a success.** With `maxIterations` set to 1 for the test, the lookup-plus-math question produced one LLM call, one catalog call, and this as the agent's entire output:
+
+```
+Agent stopped due to max iterations.
+```
+
+Execution status `success`, HTTP 200 to the caller. The first draft of this README said the agent "returns what it has" at the cap. It does not, and that sentence was written before the cap had ever been hit, which is exactly the kind of claim the Verification section below exists to prevent. Cap restored to 6 afterwards.
+
 ---
 
 ## Limitations
@@ -240,4 +248,6 @@ Following the rule this repo adopted on 9/14: a README may claim something works
 - **Agent production endpoint:** `POST /webhook/<id>/chat` from a script on a different network, executions 37 through 73 in `webhook` (production) mode, all `success`, outputs as quoted above.
 - **Published version:** export shows `versionId` equal to `activeVersionId` on both workflows, agent version counter 7.
 - **Committed files:** exported from the instance after the last change, `pinData`, `versionId`, `meta.instanceId` and `staticData` stripped, checked by script before writing.
+- **Iteration cap:** `maxIterations` set to 1 through the API, the four-turn question asked, output `Agent stopped due to max iterations.` with execution status success, cap set back to 6, export confirms 6.
+- **End state of the instance, 2026-09-20:** the chat trigger is **not public** (a POST to the production chat endpoint returns 404, checked), the catalog is still live (200, checked), `versionId` equals `activeVersionId`, version counter 9. The committed `workflow.json` is that export.
 - **Not yet verified:** the hosted chat page opened from a phone with Basic Auth on. That is the remaining manual step and it is not claimed here.
