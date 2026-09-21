@@ -3,12 +3,9 @@
   "nodes": [
     {
       "parameters": {
-        "public": false,
-        "authentication": "none",
-        "options": {
-          "title": "Content Ops Assistant",
-          "subtitle": "Asset lookups, encoding math, format questions. Demo system with invented data."
-        }
+        "public": true,
+        "authentication": "basicAuth",
+        "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
@@ -18,11 +15,16 @@
       ],
       "id": "34ff8363-a752-435a-a191-01677e94ca1b",
       "name": "When chat message received",
-      "webhookId": "04e3737d-b6ac-4239-9b92-cf98d541a353"
+      "webhookId": "04e3737d-b6ac-4239-9b92-cf98d541a353",
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "A7BpFOVJYVlkBeCB",
+          "name": "W8 chat gate"
+        }
+      }
     },
     {
       "parameters": {
-        "promptType": "auto",
         "options": {
           "systemMessage": "You are an operations assistant for a streaming content team. You answer questions about asset status, encoding math and delivery formats.\n\nYou have three tools. Use them. Do not guess.\n\n1. calculator: use it for every arithmetic step, including unit conversions. Never do arithmetic in your head, even when it looks easy. Show the formula in your answer.\n2. asset_catalog: use it whenever a question mentions an asset ID (format TT-NNNN, for example TT-0142). It returns asset_id, title, type, duration_min (minutes), mezzanine_bitrate_mbps (megabits per second), platform, status and deadline. Never invent asset details. If the catalog returns a 503, call it again with the same ID, up to two more times. On any other error, or if the 503 persists, quote the exact error text and stop. Do not make up a value and do not suggest a similar ID.\n3. wiki_summary: use it only for general factual questions about codecs, formats and standards. Never use it for asset questions. If it returns an error, say that you could not check the source and that the answer is from memory.\n\nConventions:\n- File size in megabits = duration in seconds x bitrate in Mbps. Divide by 8 for megabytes, then by 1000 for gigabytes (decimal GB).\n- Transfer time in seconds = file size in megabits / link speed in Mbps.\n- Always state units. Round to one decimal place.\n- Keep answers short: the result, the formula, and the tool values you used.",
           "maxIterations": 6,
@@ -51,8 +53,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
       "typeVersion": 1.5,
       "position": [
-        200,
-        260
+        208,
+        272
       ],
       "id": "8cb8122b-7771-4c94-922e-3bcb349f02ea",
       "name": "Anthropic Chat Model",
@@ -64,14 +66,12 @@
       }
     },
     {
-      "parameters": {
-        "contextWindowLength": 5
-      },
+      "parameters": {},
       "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
       "typeVersion": 1.3,
       "position": [
-        380,
-        260
+        384,
+        272
       ],
       "id": "ac3cf78a-7220-48f8-ad6a-de030615e063",
       "name": "Simple Memory"
@@ -82,7 +82,7 @@
       "typeVersion": 1,
       "position": [
         560,
-        260
+        272
       ],
       "id": "af451e93-c3b1-43b8-ad69-af209562f272",
       "name": "calculator"
@@ -105,8 +105,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        740,
-        260
+        752,
+        272
       ],
       "id": "8bd9724b-c88e-4bbf-8d44-b39fe3a16939",
       "name": "asset_catalog",
@@ -151,7 +151,6 @@
         "messages": {
           "messageValues": [
             {
-              "type": "SystemMessagePromptTemplate",
               "message": "You are an operations assistant for a streaming content team. You answer questions about asset status, encoding math and delivery formats.\n\nConventions:\n- File size in megabits = duration in seconds x bitrate in Mbps. Divide by 8 for megabytes, then by 1000 for gigabytes (decimal GB).\n- Transfer time in seconds = file size in megabits / link speed in Mbps.\n- Always state units. Round to one decimal place.\n- Keep answers short: the result, the formula, and the values you used."
             }
           ]
@@ -180,7 +179,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
       "typeVersion": 1.5,
       "position": [
-        520,
+        528,
         880
       ],
       "id": "4d9e45c3-087b-478c-88a9-8d4e9478b7dd",
@@ -210,8 +209,8 @@
       "type": "n8n-nodes-base.httpRequestTool",
       "typeVersion": 4.2,
       "position": [
-        920,
-        260
+        928,
+        272
       ],
       "id": "75447b0a-7850-4fb7-9f1d-d1d18ae78b36",
       "name": "wiki_summary",

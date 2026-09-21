@@ -40,14 +40,14 @@ Two workflows. Import the catalog first, because the agent calls it.
 
 - Import from file. Select your Anthropic credential on both `Anthropic Chat Model` nodes.
 - On `asset_catalog`, change the URL's hostname to your instance if it is not `n8n.mariomoreno.dev`.
-- `When chat message received` is committed with **Make Chat Publicly Available off** and **Authentication** `none`. That is deliberate: the build was measured by posting to the public endpoint from a script, and the endpoint was closed again afterwards. To use the hosted chat page, set Authentication to **Basic Auth** with a credential first, then turn public on. A public form costs nothing when strangers find it; a public agent costs tokens per message.
-- Publish. Open the chat from the editor (or the public URL once gated). Ask: `What is the status and deadline of TT-0142?`
+- `When chat message received` is committed **public, with Basic Auth**, referencing a credential named `W8 chat gate` that you will not have. Create an HTTP **Basic Auth** credential (any username and password) and select it on the trigger. A public form costs nothing when strangers find it; a public agent costs tokens per message, so this one is gated.
+- Publish. Open the Chat URL the trigger shows you, log in, and ask: `What is the status and deadline of TT-0142?`
 
 **3. The baseline**, optional: `GET https://<your-instance>/webhook/ops-agent-baseline` runs the three questions through the no-tools chain. The response carries the first answer; all three are in the execution record.
 
 The ten asset IDs in the catalog: `TT-0142`, `TT-0217`, `TT-0288`, `TT-0301`, `TT-0356`, `TT-0410`, `TT-0477`, `TT-0503`, `TT-0619`, `TT-0731`. Two special ones: `TT-0500` always returns HTTP 500, and `TT-0503` returns HTTP 503 on two calls out of every three, then succeeds on the third.
 
-The whole build was driven through the n8n public API rather than the canvas: both workflows created with `POST /api/v1/workflows`, activated with `POST /workflows/{id}/activate`, updated in place with `PUT` between experiments. Nine versions of the agent were published that way in one evening, and the export confirms `versionId` equals `activeVersionId`, so what is committed is what is serving.
+The whole build was driven through the n8n public API rather than the canvas: both workflows created with `POST /api/v1/workflows`, activated with `POST /workflows/{id}/activate`, updated in place with `PUT` between experiments. Eleven versions of the agent were published that way in one evening, and the export confirms `versionId` equals `activeVersionId`, so what is committed is what is serving.
 
 ---
 
@@ -205,7 +205,9 @@ on both lookups (`HEVC codec`, `AV1 codec`), `observation: ""`, and then a fluen
 
 **6. The baseline webhook returned one answer, not three.** `Respond: last node` returns the first item by default. All three answers were in the execution record, which is where the numbers in this README came from anyway. Not fixed, because the execution record is the right source.
 
-**7. Hitting the iteration cap is a success.** With `maxIterations` set to 1 for the test, the lookup-plus-math question produced one LLM call, one catalog call, and this as the agent's entire output:
+**7. `Authorization data is wrong!`** The first attempt to open the gated chat from a phone got that line on a black page. It is n8n's **403**, and it is a different message from the **401** `Authorization is required!` that an unauthenticated request gets: 401 means no credentials arrived and the browser should prompt; 403 means credentials arrived and did not match. So the gate was up and working, and the mismatch was on the phone: iOS offered the saved email address as the username and it was accepted instead of `mario`. The same credentials typed on a desktop worked first time. Worth knowing because the two messages look alike and point at opposite fixes.
+
+**8. Hitting the iteration cap is a success.** With `maxIterations` set to 1 for the test, the lookup-plus-math question produced one LLM call, one catalog call, and this as the agent's entire output:
 
 ```
 Agent stopped due to max iterations.
@@ -249,5 +251,6 @@ Following the rule this repo adopted on 9/14: a README may claim something works
 - **Published version:** export shows `versionId` equal to `activeVersionId` on both workflows, agent version counter 7.
 - **Committed files:** exported from the instance after the last change, `pinData`, `versionId`, `meta.instanceId` and `staticData` stripped, checked by script before writing.
 - **Iteration cap:** `maxIterations` set to 1 through the API, the four-turn question asked, output `Agent stopped due to max iterations.` with execution status success, cap set back to 6, export confirms 6.
-- **End state of the instance, 2026-09-20:** the chat trigger is **not public** (a POST to the production chat endpoint returns 404, checked), the catalog is still live (200, checked), `versionId` equals `activeVersionId`, version counter 9. The committed `workflow.json` is that export.
-- **Not yet verified:** the hosted chat page opened from a phone with Basic Auth on. That is the remaining manual step and it is not claimed here.
+- **The gate:** with Basic Auth on and published, an unauthenticated request to the production chat endpoint returns `401 Authorization is required!` and a request with wrong credentials returns `403 Authorization data is wrong!`, both checked with curl from outside.
+- **The phone check:** the hosted chat opened from a phone on cellular, logged in through the Basic Auth prompt, asked about TT-0142, and got `qc_hold`, `2026-09-25`. That produced **execution 77**, `mode: webhook`, status success, one `asset_catalog` call in the trace, 2,834 tokens. Read back through the API.
+- **End state of the instance, 2026-09-20:** chat trigger public with Basic Auth, catalog live, `versionId` equals `activeVersionId`, version counter 11. The committed `workflow.json` is that export.
