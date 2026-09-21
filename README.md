@@ -1,6 +1,6 @@
 # n8n-automations
 
-Weekly automation builds, one folder per week. Part of a 28-week push from media content operations into AI workflow automation.
+Weekly automation builds, one folder per build. Part of a 28-week push from media content operations into AI workflow automation.
 
 Each build ships whether or not it's pretty. Every folder has the exported workflow JSON and a README covering what it does, why it's built that way, what broke, and what it can't do yet.
 
@@ -8,7 +8,7 @@ I work in content operations at Warner Bros. Discovery, where I automate encodin
 
 ## Builds
 
-| Week | Build | What it covers |
+| # | Build | What it covers |
 |---|---|---|
 | 1 | [w1-rss-notifier](./w1-rss-notifier) | RSS polling, keyword filtering, Discord webhook |
 | 2 | [w2-webhook-http](./w2-webhook-http) | Inbound webhooks, payload validation, structured HTTP responses |
@@ -16,8 +16,8 @@ I work in content operations at Warner Bros. Discovery, where I automate encodin
 | 4 | [w4-ai-email-digest](./w4-ai-email-digest) | Basic LLM Chain, structured output validation, cost per run |
 | 5 | [w5-selfhost-docker](./w5-selfhost-docker) | Docker Compose, volumes and data persistence, env-var secrets | 
 | 6 | [w6-vps-deploy](./w6-vps-deploy) | Public VPS, pinned version, Caddy reverse proxy, real HTTPS |
-| 7 to 8 | [w7-media-request-triage](./w7-media-request-triage) | Public form intake, enum-constrained classifier, hand-labeled eval set, Slack approval gate, Google Sheets queue · [walkthrough](https://www.loom.com/share/707c524b660a4813927403be195a0c13) · [post](https://lnkd.in/p/ebpFitpK) |
-| 9 | [w8-ops-agent](./w8-ops-agent) | AI Agent node with three tools, chat trigger and memory, agent versus chain cost measured at 14.7x, tool error handling under three configurations, a mock API with real status codes |
+| 7 | [w7-media-request-triage](./w7-media-request-triage) | Project 1, two Saturdays. Public form intake, enum-constrained classifier, hand-labeled eval set, Slack approval gate, Google Sheets queue · [walkthrough](https://www.loom.com/share/707c524b660a4813927403be195a0c13) · [post](https://lnkd.in/p/ebpFitpK) |
+| 8 | [w8-ops-agent](./w8-ops-agent) | AI Agent node with three tools, chat trigger and memory, agent versus chain cost measured at 14.7x, tool error handling under three configurations, a mock API with real status codes |
 
 ## Themes I care about
 
