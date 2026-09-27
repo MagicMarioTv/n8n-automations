@@ -165,7 +165,16 @@ The metadata costs about 7% more prompt tokens per question, because every retri
 
 **Declining was the most expensive answer.** Q19 (loudness) took 3 LLM calls and 7,722 prompt tokens, 2.4 times the median: finding nothing, the agent searched again with a different query before saying the SOPs don't cover it. It declined correctly, and its reply named what the SOPs *do* say about audio (track layout, rendition bitrates), which is a good answer. It's also the pattern to watch: a question with no answer costs the most.
 
-**Embeddings.** The corpus is 3,997 tokens by `tiktoken`'s `cl100k_base`, the encoding `text-embedding-3-small` uses. The chunk overlap adds a little on top, so a full ingest embeds slightly over 4,000 tokens, and each question embeds its search query. The dollar figure comes from the OpenAI usage page, not a quoted price, and it had not been read when this was written.
+**Embeddings, measured and reconciled.** OpenAI's usage page shows **12,644 input tokens** on `text-embedding-3-small` for the build: 8,360 on 9/26 UTC and 4,284 on 9/27 UTC. Every one of them is accounted for:
+
+| UTC day | Billed | Full ingests | Left for searches | Searches that day |
+|---|---|---|---|---|
+| 9/26 | 8,360 | 2 x 4,167 = 8,334 | 26 | 4 (executions 81, 83 to 85) |
+| 9/27 | 4,284 | 1 x 4,167 | 117 | about 24 (the golden set, one script test, the phone check) |
+
+A full ingest is **4,167 tokens**: the text of the 21 stored chunks, counted with `tiktoken`'s `cl100k_base`, *after replacing newlines with spaces*. That last part matters. The raw chunks count 4,093, and the first reconciliation came out 174 tokens heavy on a day with only four searches. The cause is in LangChain's OpenAI embeddings class, which n8n's node uses: `stripNewLines` defaults to true, and every text is sent with `\n` replaced by a space, which tokenizes differently. The corpus files themselves are 3,997 tokens; the chunk overlap and the newline rewrite account for the rest.
+
+At OpenAI's listed $0.02 per million tokens: 12,644 / 1,000,000 x $0.02 = **$0.00025 for everything**, $0.000083 per ingest, and about $0.0000001 per search. Every embedding in the build cost **0.3% of what the golden set alone cost in chat model calls** ($0.083); the chat model is where the money goes.
 
 ---
 
@@ -246,7 +255,6 @@ A review note written after the value, `true (No SLA rules)`. JSON has no commen
 - **Documents arrive as JSON only.** No PDF, no Drive folder, no watch for changes. Someone runs the ingest.
 - **No tracing.** Tokens were read from execution records by a script. Langfuse is scheduled for Project 2.
 - **The chat greets users as "Nathan".** That is n8n's default initial message on the hosted chat, never changed. Harmless, and wrong for an SOP assistant.
-- **Embedding dollars not yet read** from the OpenAI usage page. Tokens are measured; the price is not assumed.
 
 ---
 
@@ -278,4 +286,4 @@ Following the repo's rule since 9/14: a README may claim something works only if
 - **Portable scripts:** `scripts/ingest.py` ran a third ingest (21 chunks) and `scripts/score.py Q03` scored one question with token counts matching the full run, both against the live instance.
 - **Published version:** the export shows `versionId` equal to `activeVersionId`. The committed `workflow.json` is that export with `pinData`, `versionId`, `meta` and `staticData` removed, and it was checked by script for the ingest token and chat password before writing.
 - **The phone check:** the hosted chat opened on a phone on cellular (Wi-Fi off), logged in through Basic Auth, asked `What's the SLA for clearing a QC hold?` and got 24 hours from `qc-hold-procedure.md`, with the 48 hour edition named as superseded. Follow-up in the same session, `And for a promo?`, got 4 hours from `promo-and-trailer-handling.md` and `on-call-escalation.md`. **Executions 108 and 109**, `mode: webhook`, status success, one session ID, 3,209 and 3,428 prompt tokens, read back through the n8n API.
-- **Not yet checked:** the embedding cost on the OpenAI usage page.
+- **Embedding tokens:** OpenAI's usage page (Usage, Embeddings, last 7 days) shows 12,644 input tokens on `text-embedding-3-small`, 8,360 on 9/26 UTC and 4,284 on 9/27 UTC. Reconciled to three ingests of 4,167 tokens plus 143 tokens of search queries, with execution timestamps placing each ingest and search on its UTC day. Price read from OpenAI's pricing page, not assumed.
