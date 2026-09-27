@@ -1,0 +1,41 @@
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:2.35.7
+    restart: unless-stopped
+    environment:
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - N8N_HOST=n8n.mariomoreno.dev
+      - N8N_PROTOCOL=https
+      - N8N_WEBHOOK_URL=https://n8n.mariomoreno.dev/
+      - N8N_PROXY_HOPS=1
+      - GENERIC_TIMEZONE=America/New_York
+      - TZ=America/New_York
+    volumes:
+      - n8n_data:/home/node/.n8n
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+  # Vector store for the RAG build. No ports: only containers on this
+  # compose network can reach it, at http://qdrant:6333.
+  qdrant:
+    image: qdrant/qdrant:v1.19.1
+    restart: unless-stopped
+    environment:
+      - QDRANT__SERVICE__API_KEY=${QDRANT_API_KEY}
+      - QDRANT__TELEMETRY_DISABLED=true
+    mem_limit: 384m
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+volumes:
+  n8n_data:
+  caddy_data:
+  caddy_config:
+  qdrant_data:

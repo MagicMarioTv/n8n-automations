@@ -1,0 +1,165 @@
+{
+  "about": "Twenty questions for the W9 SOP assistant. Each is scored on two axes: is the answer right (every must_contain string appears, case insensitive), and is the citation right (every expected_sources file is cited, and no superseded file is presented as current). expect_decline items pass only if the assistant says the SOPs do not cover it and cites nothing. Drafted by Claude 2026-09-26, reviewed against the SOPs by Mario the same day.",
+  "items": [
+    {
+      "id": "Q01", "category": "single fact",
+      "question": "What is the minimum mezzanine bitrate for a feature?",
+      "expected_answer": "20 Mbps.",
+      "expected_sources": ["mezzanine-spec.md"],
+      "must_contain": ["20"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q02", "category": "single fact",
+      "question": "Which video codecs are accepted for a mezzanine file?",
+      "expected_answer": "H.264 High Profile or Apple ProRes 422 HQ, and no other codec.",
+      "expected_sources": ["mezzanine-spec.md"],
+      "must_contain": ["H.264", "ProRes"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q03", "category": "single fact",
+      "question": "What bitrate is the 720p rung of the encoding ladder?",
+      "expected_answer": "3.5 Mbps.",
+      "expected_sources": ["encoding-ladder.md"],
+      "must_contain": ["3.5"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q04", "category": "conditional",
+      "question": "An episode was supplied with a UHD source. Does it get a 2160p rung?",
+      "expected_answer": "No. Only features supplied with a 3840x2160 mezzanine get the 2160p rung; episodes, trailers and promos never do, even from a UHD source.",
+      "expected_sources": ["encoding-ladder.md"],
+      "must_contain": ["feature"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q05", "category": "single fact",
+      "question": "What is the maximum number of characters per caption line?",
+      "expected_answer": "32 characters, and at most 2 lines per caption.",
+      "expected_sources": ["caption-requirements.md"],
+      "must_contain": ["32"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q06", "category": "conditional",
+      "question": "Does a 10 second promo need captions?",
+      "expected_answer": "No. Promos need captions only when longer than 15 seconds.",
+      "expected_sources": ["caption-requirements.md"],
+      "must_contain": ["15"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q07", "category": "single fact",
+      "question": "What should the mezzanine filename be for version 1 of TT-0142, Harbor Lights season 2 episode 7?",
+      "expected_answer": "TT-0142_HarborLights_S02E07_MEZZ_v01.mov",
+      "expected_sources": ["naming-conventions.md"],
+      "must_contain": ["TT-0142_HarborLights_S02E07_MEZZ_v01.mov"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q08", "category": "single fact",
+      "question": "How far before go live does an episode have to be delivered?",
+      "expected_answer": "5 business days.",
+      "expected_sources": ["delivery-deadlines.md"],
+      "must_contain": ["5 business days"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q09", "category": "single fact",
+      "question": "When is an asset considered at risk?",
+      "expected_answer": "When its deadline is less than 48 hours away and its status is anything other than delivered.",
+      "expected_sources": ["delivery-deadlines.md"],
+      "must_contain": ["48", "delivered"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q10", "category": "single fact",
+      "question": "A delivery deadline works out to land on a Saturday. What happens?",
+      "expected_answer": "It moves back to the previous Friday. Deadlines never fall on a weekend.",
+      "expected_sources": ["delivery-deadlines.md"],
+      "must_contain": ["Friday"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q11", "category": "single fact",
+      "question": "How many times can an asset be redelivered before it needs special approval, and whose?",
+      "expected_answer": "Twice. A third redelivery needs approval from the Post Production Supervisor.",
+      "expected_sources": ["redelivery-policy.md"],
+      "must_contain": ["Post Production Supervisor"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q12", "category": "single fact",
+      "question": "How quickly must a redelivery reach the platform?",
+      "expected_answer": "Within 72 hours of the fix being approved.",
+      "expected_sources": ["redelivery-policy.md"],
+      "must_contain": ["72"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q13", "category": "single fact",
+      "question": "Three assets failed QC in the last hour. Who do I page?",
+      "expected_answer": "Tier 1, the Media Operations on call. Three or more QC failures in an hour usually means an encoder or ingest fault.",
+      "expected_sources": ["on-call-escalation.md"],
+      "must_contain": ["Tier 1"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q14", "category": "contradiction",
+      "question": "What's the SLA for clearing a QC hold?",
+      "expected_answer": "24 hours, calendar hours including weekends. The 48 hour business hours SLA is from the superseded 2025 edition.",
+      "expected_sources": ["qc-hold-procedure.md"],
+      "must_contain": ["24 hours"],
+      "expect_decline": false, "reviewed": true, "review_note": "No SLA rules"
+    },
+    {
+      "id": "Q15", "category": "contradiction",
+      "question": "Can the operator who raised a QC hold clear it themselves?",
+      "expected_answer": "No. Only the QC Lead on shift can clear a hold (version 3.0). The 2025 edition let the operator clear it, but that edition is superseded.",
+      "expected_sources": ["qc-hold-procedure.md"],
+      "must_contain": ["QC Lead"],
+      "expect_decline": false, "reviewed": true, "review_note": "No guildline about operator QC hold clear"
+    },
+    {
+      "id": "Q16", "category": "cross document",
+      "question": "Can a caption failure be waived to hit a deadline?",
+      "expected_answer": "No. Caption failures cannot be waived. (The superseded 2025 edition allowed it.)",
+      "expected_sources": ["caption-requirements.md", "qc-hold-procedure.md"],
+      "must_contain": ["cannot"],
+      "expect_decline": false, "reviewed": true, "review_note": "No exceptions and no waivers."
+    },
+    {
+      "id": "Q17", "category": "cross document",
+      "question": "A promo has been sitting in qc_hold for 5 hours. What should have happened by now?",
+      "expected_answer": "It should already have been escalated: promo holds escalate after 4 hours rather than 24, and an uncleared hold goes to Tier 2.",
+      "expected_sources": ["promo-and-trailer-handling.md", "on-call-escalation.md"],
+      "must_contain": ["4 hours", "Tier 2"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q18", "category": "cross document",
+      "question": "An episode's mezzanine arrives at 6 Mbps. What happens to it?",
+      "expected_answer": "It goes to qc_hold, because the episode minimum is 8 Mbps. The hold must then be cleared or escalated within 24 hours, and a spec failure cannot be waived.",
+      "expected_sources": ["mezzanine-spec.md", "qc-hold-procedure.md"],
+      "must_contain": ["8 Mbps", "qc_hold"],
+      "expect_decline": false, "reviewed": true
+    },
+    {
+      "id": "Q19", "category": "not covered",
+      "question": "What is the target loudness for programme audio?",
+      "expected_answer": "Not covered by the SOPs. The assistant should say so and not give a number.",
+      "expected_sources": [],
+      "must_contain": [],
+      "expect_decline": true, "reviewed": true
+    },
+    {
+      "id": "Q20", "category": "not covered",
+      "question": "Which cloud provider runs our encoders?",
+      "expected_answer": "Not covered by the SOPs. The assistant should say so and not guess.",
+      "expected_sources": [],
+      "must_contain": [],
+      "expect_decline": true, "reviewed": true
+    }
+  ]
+}
