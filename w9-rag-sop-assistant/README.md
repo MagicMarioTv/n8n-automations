@@ -6,6 +6,8 @@ The point of the build is two numbers and one failure. The failure first: asked 
 
 Built and measured 2026-09-26, on the instance from [w6-vps-deploy](../w6-vps-deploy). It is the first half of Project 2, which exposes the same search over MCP.
 
+The [LinkedIn post](https://lnkd.in/p/e2BTy83B) is the short version: the superseded answer and its fix.
+
 ---
 
 ## What it does

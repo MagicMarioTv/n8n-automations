@@ -18,7 +18,7 @@ I work in content operations at Warner Bros. Discovery, where I automate encodin
 | 6 | [w6-vps-deploy](./w6-vps-deploy) | Public VPS, pinned version, Caddy reverse proxy, real HTTPS |
 | 7 | [w7-media-request-triage](./w7-media-request-triage) | Project 1, two Saturdays. Public form intake, enum-constrained classifier, hand-labeled eval set, Slack approval gate, Google Sheets queue · [walkthrough](https://www.loom.com/share/707c524b660a4813927403be195a0c13) · [post](https://lnkd.in/p/ebpFitpK) |
 | 8 | [w8-ops-agent](./w8-ops-agent) | AI Agent node with three tools, chat trigger and memory, agent versus chain cost measured at 14.7x, tool error handling under three configurations, a mock API with real status codes |
-| 9 | [w9-rag-sop-assistant](./w9-rag-sop-assistant) | RAG over ten invented SOPs with Qdrant beside n8n, cited answers, a superseded document answered as current and the metadata fix measured, a hand-reviewed twenty question golden set scoring 18 of 20 |
+| 9 | [w9-rag-sop-assistant](./w9-rag-sop-assistant) | RAG over ten invented SOPs with Qdrant beside n8n, cited answers, a superseded document answered as current and the metadata fix measured, a hand-reviewed twenty question golden set scoring 18 of 20 · [post](https://lnkd.in/p/e2BTy83B) |
 
 ## Themes I care about
 
