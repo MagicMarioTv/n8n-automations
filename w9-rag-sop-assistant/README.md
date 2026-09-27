@@ -156,6 +156,8 @@ The metadata costs about 7% more prompt tokens per question, because every retri
 **Every automatic miss was read by hand** before it counted:
 
 - **Q17, the real miss.** *"A promo has been sitting in qc_hold for 5 hours. What should have happened by now?"* Right answer: it should already have been escalated, because promo holds escalate after 4 hours. The assistant said it was "still within the service level window" of 24 hours. The trace: all four retrieval slots went to QC hold chunks, **two of them to the correctly labelled superseded edition**, and the promo SOP's 4 hour rule never reached the model. So the metadata fix stops the stale doc from being *believed*, but not from taking up retrieval slots. That needs a filter at retrieval time, which is Next.
+
+  The phone check (below) asked nearly the same thing as a follow-up, *"And for a promo?"* after the SLA question, and got it right: 4 hours, citing the promo SOP and the escalation SOP. The difference was the search query the agent wrote. For Q17 it wrote `qc_hold promo time limit deadline`, and the `qc_hold` term alone pulled four QC hold chunks. For the follow-up it wrote `promo SLA deadline turnaround time`, which retrieved the promo SOP. **Retrieval depends on how the agent phrases its search, not only on what is in the store**, so a fix that only works for one phrasing isn't a fix.
 - **Q18, correct but incomplete.** Asked what happens to a 6 Mbps episode mezzanine, it said the file goes to `qc_hold` because the minimum is 8 Mbps, which is right, and cited the mezzanine spec. The key also expected the QC hold SOP (the 24 hour window, and that a spec failure can't be waived). It was left as a miss rather than loosening the key after seeing the result.
 - **Q06, a scorer bug, not an answer bug.** The reply cited `[caption-requirements.md, promo-and-trailer-handling.md]`, two files in one bracket, and the first version of the scorer only read one file per bracket. Fixed, and the saved replies were re-scored without asking again.
 
@@ -243,6 +245,7 @@ A review note written after the value, `true (No SLA rules)`. JSON has no commen
 - **Ingest is not atomic.** Reset then insert leaves an empty or partial collection during an ingest, and after a failed one.
 - **Documents arrive as JSON only.** No PDF, no Drive folder, no watch for changes. Someone runs the ingest.
 - **No tracing.** Tokens were read from execution records by a script. Langfuse is scheduled for Project 2.
+- **The chat greets users as "Nathan".** That is n8n's default initial message on the hosted chat, never changed. Harmless, and wrong for an SOP assistant.
 - **Embedding dollars not yet read** from the OpenAI usage page. Tokens are measured; the price is not assumed.
 
 ---
@@ -274,4 +277,5 @@ Following the repo's rule since 9/14: a README may claim something works only if
 - **Golden set:** executions 86 to 105, production mode, via the Basic Auth gated chat endpoint from a machine off the VPS. Replies and token counts in `golden-results.json`.
 - **Portable scripts:** `scripts/ingest.py` ran a third ingest (21 chunks) and `scripts/score.py Q03` scored one question with token counts matching the full run, both against the live instance.
 - **Published version:** the export shows `versionId` equal to `activeVersionId`. The committed `workflow.json` is that export with `pinData`, `versionId`, `meta` and `staticData` removed, and it was checked by script for the ingest token and chat password before writing.
-- **Not yet checked:** the chat opened on a phone, and the embedding cost on the OpenAI usage page.
+- **The phone check:** the hosted chat opened on a phone on cellular (Wi-Fi off), logged in through Basic Auth, asked `What's the SLA for clearing a QC hold?` and got 24 hours from `qc-hold-procedure.md`, with the 48 hour edition named as superseded. Follow-up in the same session, `And for a promo?`, got 4 hours from `promo-and-trailer-handling.md` and `on-call-escalation.md`. **Executions 108 and 109**, `mode: webhook`, status success, one session ID, 3,209 and 3,428 prompt tokens, read back through the n8n API.
+- **Not yet checked:** the embedding cost on the OpenAI usage page.
