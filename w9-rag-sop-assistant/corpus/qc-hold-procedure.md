@@ -1,6 +1,6 @@
 # QC Hold Procedure
 
-**Doc ID:** SOP-QC-003 · **Version:** 3.0 · **Effective:** 2026-06-01 · **Owner:** QC Lead, Media Operations
+**Doc ID:** SOP-QC-003 · **Version:** 3.0 · **Effective:** 2026-06-01 · **Owner:** QC Lead, Media Operations · **Status:** Current
 **Replaces:** SOP-QC-002 (2025 edition)
 
 Every organisation, title, asset ID and process in this document is invented for a portfolio project.

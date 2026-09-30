@@ -1,6 +1,6 @@
 # Delivery Deadlines
 
-**Doc ID:** SOP-DEL-001 · **Version:** 2.0 · **Effective:** 2026-03-01 · **Owner:** Delivery Lead
+**Doc ID:** SOP-DEL-001 · **Version:** 2.0 · **Effective:** 2026-03-01 · **Owner:** Delivery Lead · **Status:** Current
 
 Every organisation, title, asset ID and process in this document is invented for a portfolio project.
 

@@ -1,6 +1,6 @@
 # Promo and Trailer Handling
 
-**Doc ID:** SOP-SHF-001 · **Version:** 1.3 · **Effective:** 2026-02-01 · **Owner:** Media Operations
+**Doc ID:** SOP-SHF-001 · **Version:** 1.3 · **Effective:** 2026-02-01 · **Owner:** Media Operations · **Status:** Current
 
 Every organisation, title, asset ID and process in this document is invented for a portfolio project.
 

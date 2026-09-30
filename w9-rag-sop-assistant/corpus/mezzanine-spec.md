@@ -1,6 +1,6 @@
 # Mezzanine Specification
 
-**Doc ID:** SOP-MEZ-002 · **Version:** 2.0 · **Effective:** 2026-01-10 · **Owner:** Encoding Engineering
+**Doc ID:** SOP-MEZ-002 · **Version:** 2.0 · **Effective:** 2026-01-10 · **Owner:** Encoding Engineering · **Status:** Current
 
 Every organisation, title, asset ID and process in this document is invented for a portfolio project.
 

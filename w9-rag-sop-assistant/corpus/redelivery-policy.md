@@ -1,6 +1,6 @@
 # Redelivery Policy
 
-**Doc ID:** SOP-DEL-003 · **Version:** 1.0 · **Effective:** 2026-05-12 · **Owner:** Delivery Lead
+**Doc ID:** SOP-DEL-003 · **Version:** 1.0 · **Effective:** 2026-05-12 · **Owner:** Delivery Lead · **Status:** Current
 
 Every organisation, title, asset ID and process in this document is invented for a portfolio project.
 

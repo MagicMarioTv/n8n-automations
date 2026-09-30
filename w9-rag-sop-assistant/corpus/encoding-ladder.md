@@ -1,6 +1,6 @@
 # Encoding Ladder
 
-**Doc ID:** SOP-ENC-001 · **Version:** 1.4 · **Effective:** 2026-04-02 · **Owner:** Encoding Engineering
+**Doc ID:** SOP-ENC-001 · **Version:** 1.4 · **Effective:** 2026-04-02 · **Owner:** Encoding Engineering · **Status:** Current
 
 Every organisation, title, asset ID and process in this document is invented for a portfolio project.
 

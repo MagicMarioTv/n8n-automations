@@ -98,7 +98,7 @@ When chat message received (Chat Trigger, Basic Auth)
 |---|---|---|
 | **Ingest Request** | Webhook, POST, Header Auth | Ingest deletes the collection and spends OpenAI tokens. Neither should be something a stranger can trigger by finding a URL. |
 | **Reset Collection** | `DELETE http://qdrant:6333/collections/sop_corpus` using the Qdrant credential, On Error: continue | The Qdrant node in this n8n version (2.35.7) has **no option to clear the collection before inserting**, checked in the node's source. Without this step every ingest adds another copy of every chunk. On Error: continue so the very first run, when there is no collection to delete, carries on. |
-| **Split Docs** | Code: one item per SOP, plus `doc_id`, `version`, `effective` and `status` parsed from the header line | The fix for the headline failure, below. It reads the docs from `$('Ingest Request')` by name, because the node before it replaced the item with Qdrant's reply to the DELETE. |
+| **Split Docs** | Code: one item per SOP, plus `doc_id`, `version`, `effective` and `status` parsed from the header line. Status is `current` only when the header says Current or Active; missing or misspelled is `unknown` | The fix for the headline failure, below. It reads the docs from `$('Ingest Request')` by name, because the node before it replaced the item with Qdrant's reply to the DELETE. |
 | **Load Doc** | Default Data Loader, JSON mode, text from `$json.text`, five metadata fields | Metadata set here is copied onto **every chunk** the splitter makes from that document. That is the mechanism the fix depends on. |
 | **Split Text** | Recursive character splitter, 1,000 characters, 100 overlap | It splits at paragraph breaks first and packs whole paragraphs until the next would pass 1,000. The SOPs run 1,250 to 2,265 characters, so every doc becomes 2 or 3 chunks and a short section stays whole. |
 | **Embeddings** (both) | OpenAI `text-embedding-3-small`, 1,536 dimensions | Anthropic has no embeddings endpoint. Ingest and query **must** use the same model: vectors from two different models are not comparable, and nothing warns you if they don't match. |
@@ -163,9 +163,11 @@ The metadata costs about 7% more prompt tokens per question, because every retri
 - **Q18, correct but incomplete.** Asked what happens to a 6 Mbps episode mezzanine, it said the file goes to `qc_hold` because the minimum is 8 Mbps, which is right, and cited the mezzanine spec. The key also expected the QC hold SOP (the 24 hour window, and that a spec failure can't be waived). It was left as a miss rather than loosening the key after seeing the result.
 - **Q06, a scorer bug, not an answer bug.** The reply cited `[caption-requirements.md, promo-and-trailer-handling.md]`, two files in one bracket, and the first version of the scorer only read one file per bracket. Fixed, and the saved replies were re-scored without asking again.
 
-**Cost, measured.** Tokens were read from `tokenUsage` on every LLM call in every execution and summed: 69,615 prompt and 2,770 completion across the twenty. At Haiku 4.5's $1 and $5 per million: 69,615 / 1,000,000 x $1 = $0.0696, plus 2,770 / 1,000,000 x $5 = $0.0139, **$0.083 for the set, $0.0042 a question.** Median prompt was 3,192 tokens.
+**Re-run 9/29 after the status parser change** (see What broke, 7): executions 111 to 130, and the same 18 of 20 with the same two misses, Q17 and Q18. Q17 again said "still 19 hours remaining" on the 24 hour rule. `golden-results.json` holds this run; the 9/26 run is in git history.
 
-**Declining was the most expensive answer.** Q19 (loudness) took 3 LLM calls and 7,722 prompt tokens, 2.4 times the median: finding nothing, the agent searched again with a different query before saying the SOPs don't cover it. It declined correctly, and its reply named what the SOPs *do* say about audio (track layout, rendition bitrates), which is a good answer. It's also the pattern to watch: a question with no answer costs the most.
+**Cost, measured.** Tokens were read from `tokenUsage` on every LLM call in every execution and summed: 71,087 prompt and 2,724 completion across the twenty (9/26: 69,615 and 2,770). At Haiku 4.5's $1 and $5 per million: 71,087 / 1,000,000 x $1 = $0.0711, plus 2,724 / 1,000,000 x $5 = $0.0136, **$0.085 for the set, $0.0042 a question.** Median prompt was 3,221 tokens. The extra prompt tokens are mostly the new `**Status:** Current` phrase on every header chunk.
+
+**Declining was the most expensive answer.** Q19 (loudness) took 3 LLM calls and 7,644 prompt tokens, 2.4 times the median: finding nothing, the agent searched again with a different query before saying the SOPs don't cover it. It declined correctly, and its reply named what the SOPs *do* say about audio (track layout, rendition bitrates), which is a good answer. It's also the pattern to watch: a question with no answer costs the most.
 
 **Embeddings, measured and reconciled.** OpenAI's usage page shows **12,644 input tokens** on `text-embedding-3-small` for the build: 8,360 on 9/26 UTC and 4,284 on 9/27 UTC. Every one of them is accounted for:
 
@@ -244,6 +246,8 @@ A review note written after the value, `true (No SLA rules)`. JSON has no commen
 
 **6. A false positive while inspecting a miss.** Checking Q17's retrieved chunks for the promo rule with `'4 hours' in chunk` flagged the current QC hold chunk. It matched the tail of **2**`4 hours`. The promo rule never arrived; a substring check on a number is not a check.
 
+**7. The parser defaulted to `current`, and the corpus depended on it (fixed 9/29).** `Split Docs` stamped anything without the word SUPERSEDED as `current`, so a missing or misspelled Status line vouched for a document nobody had checked. The obvious fix, default to `unknown`, would have stamped **9 of the 10 SOPs `unknown`**, because only the superseded 2025 edition had a Status line at all. The current documents were current by omission. So the fix is in two places: the parser now returns `current` only for an explicit Current or Active, and the nine headers gained `**Status:** Current`. Checked by running the real node code over the corpus plus a header with no Status and one reading `Curent` (both came back `unknown`), then in execution 110 after the re-ingest: nine `current`, one `superseded`, 21 chunks. The MCP learning server reads the same headers and had been labelling every hit `unknown` for the same reason.
+
 ---
 
 ## Limitations
@@ -251,7 +255,7 @@ A review note written after the value, `true (No SLA rules)`. JSON has no commen
 - **Twenty questions, run once.** 18 of 20 describes this set on this day. Temperature 0 did not make runs identical (Trade-offs), so a second run could move a borderline item.
 - **The automatic checks are string matches.** They are a first pass. Every miss was read by hand; a pass was not, and a reply can contain the right string for the wrong reason.
 - **Retrieval fails on stale editions (Q17).** The fix is known and not built.
-- **The header parser defaults to `current`.** A document with no Status line, or a typo in it, is stamped current. That fails in the dangerous direction; it should be `unknown`.
+- **`unknown` is stored, not acted on.** Since 9/29 a document with no Status line is stamped `unknown` rather than `current`, but the system prompt never mentions status, so nothing yet tells the model to hedge on an `unknown` source.
 - **Ten small documents is easy mode.** 15,539 characters in 21 chunks. Retrieval gets harder with every document added, and nothing here measures how.
 - **Ingest is not atomic.** Reset then insert leaves an empty or partial collection during an ingest, and after a failed one.
 - **Documents arrive as JSON only.** No PDF, no Drive folder, no watch for changes. Someone runs the ingest.
@@ -267,7 +271,7 @@ Project 2 (ships 10/10) builds on this directly:
 1. **Filter out superseded chunks at retrieval** (a metadata filter on `status`), or add the Cohere reranker node that is already on this instance. Then re-run the same twenty and compare Q17.
 2. **Expose `sop_search` over MCP** with the MCP Server Trigger, so Claude or any MCP client can query the SOPs as a tool. The README for that cites the NSA/CISA MCP security guidance and OWASP ASI04.
 3. **Ingest by alias swap:** build `sop_corpus_<timestamp>`, then move an alias, so a question never lands on an empty collection.
-4. **The parser defaults to `unknown`**, and a document with no Doc ID is refused rather than stored.
+4. ~~**The parser defaults to `unknown`**~~ done 9/29 (What broke, 7). Still open: a document with no Doc ID is refused rather than stored, and the system prompt says what `unknown` means.
 5. **The golden set grows**: a follow-up question that depends on memory ("and for a trailer?"), more cross document items since that category scored 1 of 3, and each run done three times.
 6. Langfuse, wired in and left in.
 

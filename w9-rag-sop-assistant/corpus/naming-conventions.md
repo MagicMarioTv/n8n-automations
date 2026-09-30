@@ -1,6 +1,6 @@
 # Naming Conventions
 
-**Doc ID:** SOP-NAM-001 · **Version:** 1.1 · **Effective:** 2025-11-01 · **Owner:** Media Operations
+**Doc ID:** SOP-NAM-001 · **Version:** 1.1 · **Effective:** 2025-11-01 · **Owner:** Media Operations · **Status:** Current
 
 Every organisation, title, asset ID and process in this document is invented for a portfolio project.
 

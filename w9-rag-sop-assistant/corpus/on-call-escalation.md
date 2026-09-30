@@ -1,6 +1,6 @@
 # On Call Escalation
 
-**Doc ID:** SOP-OPS-004 · **Version:** 2.2 · **Effective:** 2026-07-15 · **Owner:** Head of Media Operations
+**Doc ID:** SOP-OPS-004 · **Version:** 2.2 · **Effective:** 2026-07-15 · **Owner:** Head of Media Operations · **Status:** Current
 
 Every organisation, title, asset ID and process in this document is invented for a portfolio project.
 

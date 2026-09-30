@@ -1,6 +1,6 @@
 # Caption Requirements
 
-**Doc ID:** SOP-CAP-001 · **Version:** 1.2 · **Effective:** 2026-02-20 · **Owner:** Accessibility and QC
+**Doc ID:** SOP-CAP-001 · **Version:** 1.2 · **Effective:** 2026-02-20 · **Owner:** Accessibility and QC · **Status:** Current
 
 Every organisation, title, asset ID and process in this document is invented for a portfolio project.
 
