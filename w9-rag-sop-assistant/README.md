@@ -2,7 +2,7 @@
 
 A chat assistant that answers questions about a media operations team's standard operating procedures by searching them first, and cites the file every fact came from. Ten SOPs are split into chunks, embedded, and stored in a **Qdrant** vector store running beside n8n on the VPS. An n8n **AI Agent** gets one tool, a search over that store, and a system prompt that says: search before every answer, cite every fact, and say so when the SOPs don't cover something.
 
-The point of the build is two numbers and one failure. The failure first: asked the SLA for clearing a QC hold, the first version **answered with a superseded procedure and called the current one "the previous version"**, with citations on both. The fix was one ingest change, and it was measured. Then a twenty question golden set, reviewed by hand against the SOPs before anything was scored: **18 of 20 correct on both answer and citation**, at **$0.0042 a question** on Haiku 4.5.
+The point of the build is two numbers and one failure. The failure first: asked the SLA for clearing a QC hold, the first version **answered with a superseded procedure and called the current one "the previous version"**, with citations on both. The fix was one ingest change, and it was measured. Then a twenty question golden set, reviewed by hand against the SOPs before anything was scored: **18 of 20 correct on both answer and citation**, at **$0.0044 a question** on Haiku 4.5 ($0.0042 before the 9/29 status changes).
 
 Built and measured 2026-09-26, on the instance from [w6-vps-deploy](../w6-vps-deploy). It is the first half of Project 2, which exposes the same search over MCP.
 
@@ -106,7 +106,7 @@ When chat message received (Chat Trigger, Basic Auth)
 | **SOP Assistant** | AI Agent, `maxIterations: 4`, `returnIntermediateSteps: true` | Four iterations: every answer here took two LLM calls (search, then answer) except one that took three. The intermediate steps are how every finding below was found. |
 | **Anthropic Chat Model** | Haiku 4.5, **temperature 0** | Zero because the golden set needs repeatable answers. It still isn't fully repeatable; see Trade-offs. |
 
-The system prompt's five rules: search before every answer and never answer from general knowledge; cite every fact as `[filename.md]`, which is in each result's metadata under `source`; if the results don't answer the question, say the SOPs don't cover it; if two sources disagree, say so and cite both; answer first, citations after.
+The system prompt's six rules: search before every answer and never answer from general knowledge; cite every fact as `[filename.md]`, which is in each result's metadata under `source`; if the results don't answer the question, say the SOPs don't cover it; if two sources disagree, say so and cite both; answer first, citations after; and (added 9/29) read each result's `status`, never give a superseded one as the answer, and say an `unknown` one is unverified.
 
 ---
 
@@ -163,11 +163,11 @@ The metadata costs about 7% more prompt tokens per question, because every retri
 - **Q18, correct but incomplete.** Asked what happens to a 6 Mbps episode mezzanine, it said the file goes to `qc_hold` because the minimum is 8 Mbps, which is right, and cited the mezzanine spec. The key also expected the QC hold SOP (the 24 hour window, and that a spec failure can't be waived). It was left as a miss rather than loosening the key after seeing the result.
 - **Q06, a scorer bug, not an answer bug.** The reply cited `[caption-requirements.md, promo-and-trailer-handling.md]`, two files in one bracket, and the first version of the scorer only read one file per bracket. Fixed, and the saved replies were re-scored without asking again.
 
-**Re-run 9/29 after the status parser change** (see What broke, 7): executions 111 to 130, and the same 18 of 20 with the same two misses, Q17 and Q18. Q17 again said "still 19 hours remaining" on the 24 hour rule. `golden-results.json` holds this run; the 9/26 run is in git history.
+**Re-run 9/29 after the status parser change** (see What broke, 7): executions 111 to 130, and the same 18 of 20 with the same two misses, Q17 and Q18. Q17 again said "still 19 hours remaining" on the 24 hour rule. Re-run again the same day after rule 6 was added to the system prompt (What broke, 8): executions 137 to 156, **18 of 20 both correct, the same two misses**. Answer alone dropped from 19 to 18 because Q18's answer flipped to a miss. Read by hand, the new reply is right ("placed on **QC hold**", minimum 8 Mbps) and missed only the literal string `qc_hold`. The earlier "pass" opened with "The mezzanine is accepted and proceeds to encoding" before correcting itself, which is the worse reply. The key was not loosened. `golden-results.json` holds this last run; the earlier two are in git history.
 
-**Cost, measured.** Tokens were read from `tokenUsage` on every LLM call in every execution and summed: 71,087 prompt and 2,724 completion across the twenty (9/26: 69,615 and 2,770). At Haiku 4.5's $1 and $5 per million: 71,087 / 1,000,000 x $1 = $0.0711, plus 2,724 / 1,000,000 x $5 = $0.0136, **$0.085 for the set, $0.0042 a question.** Median prompt was 3,221 tokens. The extra prompt tokens are mostly the new `**Status:** Current` phrase on every header chunk.
+**Cost, measured.** Tokens were read from `tokenUsage` on every LLM call in every execution and summed: 74,234 prompt and 2,679 completion across the twenty (9/26: 69,615 and 2,770). At Haiku 4.5's $1 and $5 per million: 74,234 / 1,000,000 x $1 = $0.0742, plus 2,679 / 1,000,000 x $5 = $0.0134, **$0.088 for the set, $0.0044 a question** (9/26: $0.0042). Median prompt was 3,373 tokens (9/26: 3,192). The growth is the `**Status:** Current` phrase on every header chunk and rule 6, which rides along on every LLM call.
 
-**Declining was the most expensive answer.** Q19 (loudness) took 3 LLM calls and 7,644 prompt tokens, 2.4 times the median: finding nothing, the agent searched again with a different query before saying the SOPs don't cover it. It declined correctly, and its reply named what the SOPs *do* say about audio (track layout, rendition bitrates), which is a good answer. It's also the pattern to watch: a question with no answer costs the most.
+**Declining was the most expensive answer.** Q19 (loudness) took 3 LLM calls and 7,881 prompt tokens, 2.3 times the median: finding nothing, the agent searched again with a different query before saying the SOPs don't cover it. It declined correctly, and its reply named what the SOPs *do* say about audio (track layout, rendition bitrates), which is a good answer. It's also the pattern to watch: a question with no answer costs the most.
 
 **Embeddings, measured and reconciled.** OpenAI's usage page shows **12,644 input tokens** on `text-embedding-3-small` for the build: 8,360 on 9/26 UTC and 4,284 on 9/27 UTC. Every one of them is accounted for:
 
@@ -248,6 +248,8 @@ A review note written after the value, `true (No SLA rules)`. JSON has no commen
 
 **7. The parser defaulted to `current`, and the corpus depended on it (fixed 9/29).** `Split Docs` stamped anything without the word SUPERSEDED as `current`, so a missing or misspelled Status line vouched for a document nobody had checked. The obvious fix, default to `unknown`, would have stamped **9 of the 10 SOPs `unknown`**, because only the superseded 2025 edition had a Status line at all. The current documents were current by omission. So the fix is in two places: the parser now returns `current` only for an explicit Current or Active, and the nine headers gained `**Status:** Current`. Checked by running the real node code over the corpus plus a header with no Status and one reading `Curent` (both came back `unknown`), then in execution 110 after the re-ingest: nine `current`, one `superseded`, 21 chunks. The MCP learning server reads the same headers and had been labelling every hit `unknown` for the same reason.
 
+**8. The model saw `unknown` and ignored it (fixed 9/29).** The status reaches the model: `sop_search` has `includeDocumentMetadata` on, and the tool result in execution 132 carries `"status":"unknown"`. To test that, a throwaway `archive-retention.md` with no Status line was ingested beside the corpus and the agent was asked how long mezzanines are kept in the archive. With the five rule prompt it answered "7 years" and cited the file with no caveat (execution 132). Rule 6 was added: current is in force, superseded is never the answer, unknown can be used but must be called unverified. Same question, three fresh sessions (executions 133 to 135): 3 of 3 gave 7 years with the note "The status of this document is unverified" and that the SOP does not say whether it is in force. The corpus was then re-ingested without the test document, 21 chunks.
+
 ---
 
 ## Limitations
@@ -255,7 +257,7 @@ A review note written after the value, `true (No SLA rules)`. JSON has no commen
 - **Twenty questions, run once.** 18 of 20 describes this set on this day. Temperature 0 did not make runs identical (Trade-offs), so a second run could move a borderline item.
 - **The automatic checks are string matches.** They are a first pass. Every miss was read by hand; a pass was not, and a reply can contain the right string for the wrong reason.
 - **Retrieval fails on stale editions (Q17).** The fix is known and not built.
-- **`unknown` is stored, not acted on.** Since 9/29 a document with no Status line is stamped `unknown` rather than `current`, but the system prompt never mentions status, so nothing yet tells the model to hedge on an `unknown` source.
+- **The `unknown` rule is tested on one question.** Three runs of one question against one throwaway document (What broke, 8). No real SOP is `unknown`, so the golden set cannot exercise it.
 - **Ten small documents is easy mode.** 15,539 characters in 21 chunks. Retrieval gets harder with every document added, and nothing here measures how.
 - **Ingest is not atomic.** Reset then insert leaves an empty or partial collection during an ingest, and after a failed one.
 - **Documents arrive as JSON only.** No PDF, no Drive folder, no watch for changes. Someone runs the ingest.
@@ -271,7 +273,7 @@ Project 2 (ships 10/10) builds on this directly:
 1. **Filter out superseded chunks at retrieval** (a metadata filter on `status`), or add the Cohere reranker node that is already on this instance. Then re-run the same twenty and compare Q17.
 2. **Expose `sop_search` over MCP** with the MCP Server Trigger, so Claude or any MCP client can query the SOPs as a tool. The README for that cites the NSA/CISA MCP security guidance and OWASP ASI04.
 3. **Ingest by alias swap:** build `sop_corpus_<timestamp>`, then move an alias, so a question never lands on an empty collection.
-4. ~~**The parser defaults to `unknown`**~~ done 9/29 (What broke, 7). Still open: a document with no Doc ID is refused rather than stored, and the system prompt says what `unknown` means.
+4. ~~**The parser defaults to `unknown`**~~ done 9/29 (What broke, 7). The system prompt now says what `unknown` means (What broke, 8). Still open: a document with no Doc ID is refused rather than stored.
 5. **The golden set grows**: a follow-up question that depends on memory ("and for a trailer?"), more cross document items since that category scored 1 of 3, and each run done three times.
 6. Langfuse, wired in and left in.
 

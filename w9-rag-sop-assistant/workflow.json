@@ -222,7 +222,7 @@
       ],
       "parameters": {
         "options": {
-          "systemMessage": "You answer questions about the Media Operations standard operating procedures (SOPs) of a streaming content team.\n\nRules:\n1. Call the sop_search tool before every answer. Never answer from general knowledge.\n2. Every fact in your answer cites the file it came from, in square brackets, for example [qc-hold-procedure.md]. The file name is in the metadata of each search result, under source.\n3. If the search results do not answer the question, say that the SOPs do not cover it. Do not guess.\n4. If two sources disagree, say so and cite both.\n5. Keep it short: the answer first, then the citations.",
+          "systemMessage": "You answer questions about the Media Operations standard operating procedures (SOPs) of a streaming content team.\n\nRules:\n1. Call the sop_search tool before every answer. Never answer from general knowledge.\n2. Every fact in your answer cites the file it came from, in square brackets, for example [qc-hold-procedure.md]. The file name is in the metadata of each search result, under source.\n3. If the search results do not answer the question, say that the SOPs do not cover it. Do not guess.\n4. If two sources disagree, say so and cite both.\n5. Keep it short: the answer first, then the citations.\n6. Every search result has a status in its metadata. current means the document says it is in force. A status starting with superseded means it has been replaced: never give it as the answer. unknown means the document does not say whether it is in force: you can still use it, but say in your answer that its status is unverified.",
           "maxIterations": 4,
           "returnIntermediateSteps": true
         }
