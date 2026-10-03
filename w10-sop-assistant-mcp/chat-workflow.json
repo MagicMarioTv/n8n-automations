@@ -1,0 +1,468 @@
+{
+  "name": "W9 - SOP Assistant (RAG)",
+  "nodes": [
+    {
+      "id": "21d42558-c114-4246-95ec-c9005ac03fc7",
+      "name": "Ingest Request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sop-ingest",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "bcEW5nPd0yrx6yHc",
+          "name": "W9 ingest token"
+        }
+      },
+      "webhookId": "3d1cf9a0-3519-4607-a8cf-c9cc1e4a9dc3"
+    },
+    {
+      "id": "452cadab-162e-4daa-8c5e-b04c29c676de",
+      "name": "Reset Collection",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "method": "DELETE",
+        "url": "http://qdrant:6333/collections/sop_corpus",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "qdrantApi",
+        "options": {}
+      },
+      "credentials": {
+        "qdrantApi": {
+          "id": "aPAYbZZJtp2ZJp8D",
+          "name": "W9 Qdrant (internal)"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "417c548b-4bc9-4f14-9e0c-c5c701bd545f",
+      "name": "Split Docs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// The webhook body carries every SOP as { filename, text }.\n// Read it from the trigger by name: the reset node before this one replaced the item with Qdrant's reply.\nconst docs = $('Ingest Request').first().json.body.docs || [];\n\n// Each SOP opens with a header line like:\n//   **Doc ID:** SOP-QC-002 · **Version:** 2.1 · **Effective:** 2025-03-15 · **Status:** SUPERSEDED by SOP-QC-003 on 2026-06-01\n// Pull those facts out so every chunk can carry them, not only the chunk the header lands in.\nconst field = (text, label) => {\n  const m = text.match(new RegExp('\\\\*\\\\*' + label + ':\\\\*\\\\*\\\\s*([^·\\\\n]+)'));\n  return m ? m[1].trim() : '';\n};\n\nreturn docs.map(d => {\n  const statusText = field(d.text, 'Status');\n  return {\n    json: {\n      filename: d.filename,\n      text: d.text,\n      doc_id: field(d.text, 'Doc ID'),\n      version: field(d.text, 'Version'),\n      effective: field(d.text, 'Effective'),\n      // Only an explicit Current or Active is current. A missing or misspelled Status is unknown,\n      // because stamping it current would vouch for an edition nobody checked.\n      status: /^superseded/i.test(statusText) ? 'superseded: ' + statusText.replace(/^SUPERSEDED\\s*/i, '')\n            : /^(current|active)\\b/i.test(statusText) ? 'current'\n            : 'unknown',\n    },\n  };\n});\n"
+      }
+    },
+    {
+      "id": "b6935788-26fa-4ca5-b4e4-c32a866c0acb",
+      "name": "Store Chunks",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        660,
+        0
+      ],
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "mode": "id",
+          "value": "sop_corpus"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "qdrantApi": {
+          "id": "aPAYbZZJtp2ZJp8D",
+          "name": "W9 Qdrant (internal)"
+        }
+      }
+    },
+    {
+      "id": "044e858c-c82a-437b-8b54-57f34b03a206",
+      "name": "Embeddings (ingest)",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        600,
+        220
+      ],
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "Yhy5a9ZQc4HtsL2e",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "id": "d168f73a-2874-45eb-9a35-8c4cc028381e",
+      "name": "Load Doc",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        760,
+        220
+      ],
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.text }}",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "source",
+                "value": "={{ $json.filename }}"
+              },
+              {
+                "name": "doc_id",
+                "value": "={{ $json.doc_id }}"
+              },
+              {
+                "name": "version",
+                "value": "={{ $json.version }}"
+              },
+              {
+                "name": "effective",
+                "value": "={{ $json.effective }}"
+              },
+              {
+                "name": "status",
+                "value": "={{ $json.status }}"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "8525dc69-90d4-42e9-8251-b44515446da5",
+      "name": "Split Text",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        860,
+        400
+      ],
+      "parameters": {
+        "chunkSize": 1000,
+        "chunkOverlap": 100,
+        "options": {}
+      }
+    },
+    {
+      "id": "de675e3e-7dcf-46c8-b0a4-e08d253c7692",
+      "name": "Summarize Ingest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// One item comes out of the vector store per stored chunk. Count them per source file.\nconst perFile = {};\nfor (const item of $input.all()) {\n  const src = item.json.metadata?.source ?? 'unknown';\n  perFile[src] = (perFile[src] || 0) + 1;\n}\nreturn [{ json: { chunks: $input.all().length, files: Object.keys(perFile).length, perFile } }];\n"
+      }
+    },
+    {
+      "id": "030d1105-8a00-4d31-95e4-63c6a96bfa37",
+      "name": "Send Ingest Result",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1220,
+        0
+      ],
+      "parameters": {
+        "options": {}
+      }
+    },
+    {
+      "id": "02eb69f4-6a94-4c66-88de-e183da19f318",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        700
+      ],
+      "parameters": {
+        "public": true,
+        "authentication": "basicAuth",
+        "options": {}
+      },
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "wV8hAzNoNSX6um0w",
+          "name": "W9 chat gate"
+        }
+      },
+      "webhookId": "92ce0a1c-52ee-481b-84a4-cc4a2b692f9e"
+    },
+    {
+      "id": "04a132fd-78ff-40f1-afa6-958f21ec61d6",
+      "name": "SOP Assistant",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        260,
+        700
+      ],
+      "parameters": {
+        "options": {
+          "systemMessage": "You answer questions about the Media Operations standard operating procedures (SOPs) of a streaming content team.\n\nRules:\n1. Call the sop_search tool before every answer. Never answer from general knowledge.\n2. Every fact in your answer cites the file it came from, in square brackets, for example [qc-hold-procedure.md]. The file name is in the metadata of each search result, under source.\n3. If the search results do not answer the question, say that the SOPs do not cover it. Do not guess.\n4. If two sources disagree, say so and cite both.\n5. Keep it short: the answer first, then the citations.\n6. Every search result has a status in its metadata. current means the document says it is in force. A status starting with superseded means it has been replaced: never give it as the answer. unknown means the document does not say whether it is in force: you can still use it, but say in your answer that its status is unverified.",
+          "maxIterations": 4,
+          "returnIntermediateSteps": true
+        }
+      }
+    },
+    {
+      "id": "d70f554c-366f-4dfb-b31f-03b3b81246e1",
+      "name": "Anthropic Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        140,
+        920
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-haiku-4-5-20251001",
+          "mode": "list",
+          "cachedResultName": "Claude Haiku 4.5"
+        },
+        "options": {
+          "temperature": 0
+        }
+      },
+      "credentials": {
+        "anthropicApi": {
+          "id": "5otvo0Iyz16H4EWj",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "id": "78f17f6b-ccbb-4f13-bd7c-6204a74abec3",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        300,
+        920
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "7588b8d9-694c-4b72-8e01-c8d59f0bac7f",
+      "name": "sop_search",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        920
+      ],
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Search the Media Operations SOPs (QC holds, mezzanine spec, encoding ladder, captions, naming, deadlines, redelivery, promos and trailers, on call escalation). Input is a search query. Returns the most relevant passages, each with its source file name.",
+        "qdrantCollection": {
+          "__rl": true,
+          "mode": "id",
+          "value": "sop_corpus"
+        },
+        "topK": 4,
+        "includeDocumentMetadata": true,
+        "options": {
+          "searchFilterJson": "{\n  \"should\": [\n    {\n      \"key\": \"metadata.status\",\n      \"match\": {\n        \"value\": \"current\"\n      }\n    },\n    {\n      \"key\": \"metadata.status\",\n      \"match\": {\n        \"value\": \"unknown\"\n      }\n    }\n  ]\n}"
+        }
+      },
+      "credentials": {
+        "qdrantApi": {
+          "id": "aPAYbZZJtp2ZJp8D",
+          "name": "W9 Qdrant (internal)"
+        }
+      }
+    },
+    {
+      "id": "849040f2-4e79-4c0b-9680-34a354f20d55",
+      "name": "Embeddings (query)",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        1120
+      ],
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "Yhy5a9ZQc4HtsL2e",
+          "name": "OpenAI account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Ingest Request": {
+      "main": [
+        [
+          {
+            "node": "Reset Collection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reset Collection": {
+      "main": [
+        [
+          {
+            "node": "Split Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Docs": {
+      "main": [
+        [
+          {
+            "node": "Store Chunks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Chunks": {
+      "main": [
+        [
+          {
+            "node": "Summarize Ingest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize Ingest": {
+      "main": [
+        [
+          {
+            "node": "Send Ingest Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings (ingest)": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Store Chunks",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Doc": {
+      "ai_document": [
+        [
+          {
+            "node": "Store Chunks",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Text": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Load Doc",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "SOP Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "SOP Assistant",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "SOP Assistant",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sop_search": {
+      "ai_tool": [
+        [
+          {
+            "node": "SOP Assistant",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings (query)": {
+      "ai_embedding": [
+        [
+          {
+            "node": "sop_search",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

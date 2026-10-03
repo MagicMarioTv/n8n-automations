@@ -1,0 +1,170 @@
+[
+  {
+    "label": "1 no token",
+    "auth": "none",
+    "request": {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "initialize",
+      "params": {
+        "protocolVersion": "2026-07-28",
+        "capabilities": {},
+        "clientInfo": {
+          "name": "probe_w10_mcp",
+          "version": "1.0"
+        }
+      }
+    },
+    "status": 403,
+    "ms": 408,
+    "content_type": null,
+    "session_header": null,
+    "raw": "Authorization data is wrong!",
+    "parsed": null
+  },
+  {
+    "label": "2 wrong token",
+    "auth": "wrong",
+    "request": {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "initialize",
+      "params": {
+        "protocolVersion": "2026-07-28",
+        "capabilities": {},
+        "clientInfo": {
+          "name": "probe_w10_mcp",
+          "version": "1.0"
+        }
+      }
+    },
+    "status": 403,
+    "ms": 353,
+    "content_type": null,
+    "session_header": null,
+    "raw": "Authorization data is wrong!",
+    "parsed": null
+  },
+  {
+    "label": "3 initialize",
+    "auth": "correct",
+    "request": {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "initialize",
+      "params": {
+        "protocolVersion": "2026-07-28",
+        "capabilities": {},
+        "clientInfo": {
+          "name": "probe_w10_mcp",
+          "version": "1.0"
+        }
+      }
+    },
+    "status": 200,
+    "ms": 433,
+    "content_type": "text/event-stream",
+    "session_header": "f7a27fb5-88e9-434e-a75c-f400c73f0ec4",
+    "raw": "event: message\ndata: {\"result\":{\"protocolVersion\":\"2025-11-25\",\"capabilities\":{\"tools\":{}},\"serverInfo\":{\"name\":\"MCP_Server_Trigger\",\"version\":\"0.1.0\"}},\"jsonrpc\":\"2.0\",\"id\":1}\n\n",
+    "parsed": {
+      "result": {
+        "protocolVersion": "2025-11-25",
+        "capabilities": {
+          "tools": {}
+        },
+        "serverInfo": {
+          "name": "MCP_Server_Trigger",
+          "version": "0.1.0"
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 1
+    }
+  },
+  {
+    "label": "3b initialized",
+    "auth": "correct",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "notifications/initialized"
+    },
+    "status": 202,
+    "ms": 343,
+    "content_type": "text/plain; charset=UTF-8",
+    "session_header": null,
+    "raw": "",
+    "parsed": null
+  },
+  {
+    "label": "3c tools/list",
+    "auth": "correct",
+    "request": {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "method": "tools/list"
+    },
+    "status": 200,
+    "ms": 401,
+    "content_type": "text/event-stream",
+    "session_header": "f7a27fb5-88e9-434e-a75c-f400c73f0ec4",
+    "raw": "event: message\ndata: {\"result\":{\"tools\":[{\"name\":\"search_sops\",\"description\":\"Search the Media Operations standard operating procedures (SOPs): QC holds, the mezzanine file spec, the encoding ladder, captions, file naming, delivery deadlines, redelivery, promos and trailers, and on call escalation. Input is a natural language search query. Returns up to 4 passages, each with its text and metadata: the source file name, doc ID, version, effective date and status. Superseded editions are excluded; a status of 'unknown' means the edition was never confirmed as current, so say so if you use it. Cite the source file name for every fact you use. If no passage answers the question, say the SOPs do not cover it rather than guessing.\",\"inputSchema\":{\"type\":\"object\",\"properties\":{\"input\":{\"type\":\"string\",\"description\":\"Query to search for. Required\"}},\"required\":[\"input\"],\"additionalProperties\":true,\"$schema\":\"http://json-schema.org/draft-07/schema#\"}}]},\"jsonrpc\":\"2.0\",\"id\":2}\n\n",
+    "parsed": {
+      "result": {
+        "tools": [
+          {
+            "name": "search_sops",
+            "description": "Search the Media Operations standard operating procedures (SOPs): QC holds, the mezzanine file spec, the encoding ladder, captions, file naming, delivery deadlines, redelivery, promos and trailers, and on call escalation. Input is a natural language search query. Returns up to 4 passages, each with its text and metadata: the source file name, doc ID, version, effective date and status. Superseded editions are excluded; a status of 'unknown' means the edition was never confirmed as current, so say so if you use it. Cite the source file name for every fact you use. If no passage answers the question, say the SOPs do not cover it rather than guessing.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "input": {
+                  "type": "string",
+                  "description": "Query to search for. Required"
+                }
+              },
+              "required": [
+                "input"
+              ],
+              "additionalProperties": true,
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            }
+          }
+        ]
+      },
+      "jsonrpc": "2.0",
+      "id": 2
+    }
+  },
+  {
+    "label": "4 tools/call Q14",
+    "auth": "correct",
+    "request": {
+      "jsonrpc": "2.0",
+      "id": 3,
+      "method": "tools/call",
+      "params": {
+        "name": "search_sops",
+        "arguments": {
+          "input": "What's the SLA for clearing a QC hold?"
+        }
+      }
+    },
+    "status": 200,
+    "ms": 674,
+    "content_type": "text/event-stream",
+    "session_header": "f7a27fb5-88e9-434e-a75c-f400c73f0ec4",
+    "raw": "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"[{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"{\\\\\\\"pageContent\\\\\\\":\\\\\\\"## 4. Who clears a hold\\\\\\\\n\\\\\\\\nOnly the **QC Lead on shift** can clear a hold. The operator who raised it cannot clear their own hold. This separation was introduced in version 3.0.\\\\\\\\n\\\\\\\\nTo clear a hold the QC Lead records one of three outcomes:\\\\\\\\n\\\\\\\\n1. **Fixed:** the defect was corrected and the asset passed a second QC pass. Status returns to `encoding` or `ingested`, whichever it came from.\\\\\\\\n2. **Waived:** the defect is accepted for this delivery. A waiver needs a written reason and is only allowed for the black frame and runtime triggers. Caption and spec failures cannot be waived.\\\\\\\\n3. **Rejected:** the source is unusable and a new mezzanine is requested from the supplier.\\\\\\\\n\\\\\\\\n## 5. Escalation\\\\\\\\n\\\\\\\\nIf a hold is not cleared within 24 hours, it is escalated to Tier 2 under the On Call Escalation SOP (SOP-OPS-004).\\\\\\\",\\\\\\\"metadata\\\\\\\":{\\\\\\\"source\\\\\\\":\\\\\\\"qc-hold-procedure.md\\\\\\\",\\\\\\\"blobType\\\\\\\":\\\\\\\"text/plain\\\\\\\",\\\\\\\"loc\\\\\\\":{\\\\\\\"lines\\\\\\\":{\\\\\\\"from\\\\\\\":28,\\\\\\\"to\\\\\\\":40}},\\\\\\\"doc_id\\\\\\\":\\\\\\\"SOP-QC-003\\\\\\\",\\\\\\\"version\\\\\\\":\\\\\\\"3.0\\\\\\\",\\\\\\\"effective\\\\\\\":\\\\\\\"2026-06-01\\\\\\\",\\\\\\\"status\\\\\\\":\\\\\\\"current\\\\\\\"},\\\\\\\"id\\\\\\\":\\\\\\\"64af2a2c-476a-469c-a75e-3864eb9c91b0\\\\\\\"}\\\"},{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"{\\\\\\\"pageContent\\\\\\\":\\\\\\\"An asset moves to status `qc_hold` when any of the following is found during automated or manual QC:\\\\\\\\n\\\\\\\\n- Captions are missing, or fail the checks in the Caption Requirements SOP (SOP-CAP-001).\\\\\\\\n- The mezzanine file does not meet the Mezzanine Specification (SOP-MEZ-002): wrong codec, frame rate, resolution, or a bitrate below the minimum for its asset type.\\\\\\\\n- The filename does not match the Naming Conventions SOP (SOP-NAM-001).\\\\\\\\n- Video dropouts, black frames longer than 2 seconds outside of programme breaks, or frozen frames longer than 1 second.\\\\\\\\n- Runtime differs from the catalog duration by more than 30 seconds.\\\\\\\\n\\\\\\\\n## 3. Service level\\\\\\\\n\\\\\\\\n**A QC hold must be cleared or escalated within 24 hours of being raised.** The clock runs on calendar hours, including weekends.\\\\\\\\n\\\\\\\\nIf the asset's delivery deadline is less than 48 hours away when the hold is raised, the QC Lead is notified immediately rather than at the end of the 24 hour window.\\\\\\\\n\\\\\\\\n## 4. Who clears a hold\\\\\\\",\\\\\\\"metadata\\\\\\\":{\\\\\\\"source\\\\\\\":\\\\\\\"qc-hold-procedure.md\\\\\\\",\\\\\\\"blobType\\\\\\\":\\\\\\\"text/plain\\\\\\\",\\\\\\\"loc\\\\\\\":{\\\\\\\"lines\\\\\\\":{\\\\\\\"from\\\\\\\":14,\\\\\\\"to\\\\\\\":28}},\\\\\\\"doc_id\\\\\\\":\\\\\\\"SOP-QC-003\\\\\\\",\\\\\\\"version\\\\\\\":\\\\\\\"3.0\\\\\\\",\\\\\\\"effective\\\\\\\":\\\\\\\"2026-06-01\\\\\\\",\\\\\\\"status\\\\\\\":\\\\\\\"current\\\\\\\"},\\\\\\\"id\\\\\\\":\\\\\\\"e6ce0755-07d7-4310-9e0c-8fe93fa8332e\\\\\\\"}\\\"},{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"{\\\\\\\"pageContent\\\\\\\":\\\\\\\"# QC Hold Procedure\\\\\\\\n\\\\\\\\n**Doc ID:** SOP-QC-003 · **Version:** 3.0 · **Effective:** 2026-06-01 · **Owner:** QC Lead, Media Operations · **Status:** Current\\\\\\\\n**Replaces:** SOP-QC-002 (2025 edition)\\\\\\\\n\\\\\\\\nEvery organisation, title, asset ID and process in this document is invented for a portfolio project.\\\\\\\\n\\\\\\\\n## 1. Purpose\\\\\\\\n\\\\\\\\nA QC hold stops an asset from moving to delivery until a named person has looked at a problem and decided what happens next. The hold exists so that a known defect never reaches a platform by default.\\\\\\\\n\\\\\\\\n## 2. What triggers a hold\\\\\\\\n\\\\\\\\nAn asset moves to status `qc_hold` when any of the following is found during automated or manual QC:\\\\\\\",\\\\\\\"metadata\\\\\\\":{\\\\\\\"source\\\\\\\":\\\\\\\"qc-hold-procedure.md\\\\\\\",\\\\\\\"blobType\\\\\\\":\\\\\\\"text/plain\\\\\\\",\\\\\\\"loc\\\\\\\":{\\\\\\\"lines\\\\\\\":{\\\\\\\"from\\\\\\\":1,\\\\\\\"to\\\\\\\":14}},\\\\\\\"doc_id\\\\\\\":\\\\\\\"SOP-QC-003\\\\\\\",\\\\\\\"version\\\\\\\":\\\\\\\"3.0\\\\\\\",\\\\\\\"effective\\\\\\\":\\\\\\\"2026-06-01\\\\\\\",\\\\\\\"status\\\\\\\":\\\\\\\"current\\\\\\\"},\\\\\\\"id\\\\\\\":\\\\\\\"c558130e-47e4-486e-ac57-697638c751e8\\\\\\\"}\\\"},{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"{\\\\\\\"pageContent\\\\\\\":\\\\\\\"## 3. Rules\\\\\\\\n\\\\\\\\n1. The corrected file gets a **higher version number** than the fi",
+    "parsed": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "[{\"type\":\"text\",\"text\":\"{\\\"pageContent\\\":\\\"## 4. Who clears a hold\\\\n\\\\nOnly the **QC Lead on shift** can clear a hold. The operator who raised it cannot clear their own hold. This separation was introduced in version 3.0.\\\\n\\\\nTo clear a hold the QC Lead records one of three outcomes:\\\\n\\\\n1. **Fixed:** the defect was corrected and the asset passed a second QC pass. Status returns to `encoding` or `ingested`, whichever it came from.\\\\n2. **Waived:** the defect is accepted for this delivery. A waiver needs a written reason and is only allowed for the black frame and runtime triggers. Caption and spec failures cannot be waived.\\\\n3. **Rejected:** the source is unusable and a new mezzanine is requested from the supplier.\\\\n\\\\n## 5. Escalation\\\\n\\\\nIf a hold is not cleared within 24 hours, it is escalated to Tier 2 under the On Call Escalation SOP (SOP-OPS-004).\\\",\\\"metadata\\\":{\\\"source\\\":\\\"qc-hold-procedure.md\\\",\\\"blobType\\\":\\\"text/plain\\\",\\\"loc\\\":{\\\"lines\\\":{\\\"from\\\":28,\\\"to\\\":40}},\\\"doc_id\\\":\\\"SOP-QC-003\\\",\\\"version\\\":\\\"3.0\\\",\\\"effective\\\":\\\"2026-06-01\\\",\\\"status\\\":\\\"current\\\"},\\\"id\\\":\\\"64af2a2c-476a-469c-a75e-3864eb9c91b0\\\"}\"},{\"type\":\"text\",\"text\":\"{\\\"pageContent\\\":\\\"An asset moves to status `qc_hold` when any of the following is found during automated or manual QC:\\\\n\\\\n- Captions are missing, or fail the checks in the Caption Requirements SOP (SOP-CAP-001).\\\\n- The mezzanine file does not meet the Mezzanine Specification (SOP-MEZ-002): wrong codec, frame rate, resolution, or a bitrate below the minimum for its asset type.\\\\n- The filename does not match the Naming Conventions SOP (SOP-NAM-001).\\\\n- Video dropouts, black frames longer than 2 seconds outside of programme breaks, or frozen frames longer than 1 second.\\\\n- Runtime differs from the catalog duration by more than 30 seconds.\\\\n\\\\n## 3. Service level\\\\n\\\\n**A QC hold must be cleared or escalated within 24 hours of being raised.** The clock runs on calendar hours, including weekends.\\\\n\\\\nIf the asset's delivery deadline is less than 48 hours away when the hold is raised, the QC Lead is notified immediately rather than at the end of the 24 hour window.\\\\n\\\\n## 4. Who clears a hold\\\",\\\"metadata\\\":{\\\"source\\\":\\\"qc-hold-procedure.md\\\",\\\"blobType\\\":\\\"text/plain\\\",\\\"loc\\\":{\\\"lines\\\":{\\\"from\\\":14,\\\"to\\\":28}},\\\"doc_id\\\":\\\"SOP-QC-003\\\",\\\"version\\\":\\\"3.0\\\",\\\"effective\\\":\\\"2026-06-01\\\",\\\"status\\\":\\\"current\\\"},\\\"id\\\":\\\"e6ce0755-07d7-4310-9e0c-8fe93fa8332e\\\"}\"},{\"type\":\"text\",\"text\":\"{\\\"pageContent\\\":\\\"# QC Hold Procedure\\\\n\\\\n**Doc ID:** SOP-QC-003 · **Version:** 3.0 · **Effective:** 2026-06-01 · **Owner:** QC Lead, Media Operations · **Status:** Current\\\\n**Replaces:** SOP-QC-002 (2025 edition)\\\\n\\\\nEvery organisation, title, asset ID and process in this document is invented for a portfolio project.\\\\n\\\\n## 1. Purpose\\\\n\\\\nA QC hold stops an asset from moving to delivery until a named person has looked at a problem and decided what happens next. The hold exists so that a known defect never reaches a platform by default.\\\\n\\\\n## 2. What triggers a hold\\\\n\\\\nAn asset moves to status `qc_hold` when any of the following is found during automated or manual QC:\\\",\\\"metadata\\\":{\\\"source\\\":\\\"qc-hold-procedure.md\\\",\\\"blobType\\\":\\\"text/plain\\\",\\\"loc\\\":{\\\"lines\\\":{\\\"from\\\":1,\\\"to\\\":14}},\\\"doc_id\\\":\\\"SOP-QC-003\\\",\\\"version\\\":\\\"3.0\\\",\\\"effective\\\":\\\"2026-06-01\\\",\\\"status\\\":\\\"current\\\"},\\\"id\\\":\\\"c558130e-47e4-486e-ac57-697638c751e8\\\"}\"},{\"type\":\"text\",\"text\":\"{\\\"pageContent\\\":\\\"## 3. Rules\\\\n\\\\n1. The corrected file gets a **higher version number** than the file it replaces (SOP-NAM-001 section 4).\\\\n2. The corrected asset goes through **full QC again**. A redelivery that fails QC goes to `qc_hold` like any other asset.\\\\n3. A redelivery must reach the platform within **72 hours** of the fix being approved.\\\\n\\\\n## 4. Limit\\\\n\\\\nAn asset may be redelivered **at most twice**. A third redelivery needs approval from the Post Production Supervisor, and the asset is flagged in the monthly quality review.\\\\n\\\\n## 5. Status during redelivery\\\\n\\\\nWhile a redelivery is in progress the asset's status returns to `encoding`, and goes back to `delivered` when the platform confirms receipt.\\\",\\\"metadata\\\":{\\\"source\\\":\\\"redelivery-policy.md\\\",\\\"blobType\\\":\\\"text/plain\\\",\\\"loc\\\":{\\\"lines\\\":{\\\"from\\\":19,\\\"to\\\":31}},\\\"doc_id\\\":\\\"SOP-DEL-003\\\",\\\"version\\\":\\\"1.0\\\",\\\"effective\\\":\\\"2026-05-12\\\",\\\"status\\\":\\\"current\\\"},\\\"id\\\":\\\"c30c9d9d-705d-4bb7-b520-6e6ade42f78f\\\"}\"}]"
+          }
+        ]
+      },
+      "jsonrpc": "2.0",
+      "id": 3
+    }
+  }
+]

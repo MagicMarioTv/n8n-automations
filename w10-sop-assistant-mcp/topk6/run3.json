@@ -1,0 +1,42 @@
+{
+  "summary": {
+    "run_at": "2026-10-03 19:53",
+    "questions": 2,
+    "answer_correct": 2,
+    "citation_correct": 1,
+    "both_correct": 1,
+    "prompt_tokens": 8292,
+    "completion_tokens": 378,
+    "cost_usd_haiku": 0.01018
+  },
+  "results": [
+    {
+      "id": "Q14",
+      "category": "contradiction",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "qc-hold-procedure.md"
+      ],
+      "execution": 185,
+      "llm_calls": 2,
+      "prompt_tokens": 4069,
+      "completion_tokens": 201,
+      "reply": "A QC hold must be cleared or escalated within **24 hours** of being raised. The clock runs on calendar hours, including weekends. [qc-hold-procedure.md]\n\nIf the asset's delivery deadline is less than 48 hours away when the hold is raised, the QC Lead is notified immediately rather than waiting for the end of the 24-hour window. [qc-hold-procedure.md]\n\nIf the hold is not cleared within 24 hours, it is escalated to Tier 2 under the On Call Escalation SOP. [qc-hold-procedure.md]"
+    },
+    {
+      "id": "Q17",
+      "category": "cross document",
+      "answer_ok": true,
+      "citation_ok": false,
+      "cited": [
+        "promo-and-trailer-handling.md"
+      ],
+      "execution": 186,
+      "llm_calls": 2,
+      "prompt_tokens": 4223,
+      "completion_tokens": 177,
+      "reply": "By now, the promo should have been **escalated to Tier 2** under the On Call Escalation SOP.\n\nPromos in `qc_hold` have a much shorter window than other asset types: they must be cleared or escalated after **4 hours**, not the standard 24 hours. Since this promo has been in qc_hold for 5 hours, it is 1 hour overdue for escalation. [promo-and-trailer-handling.md]"
+    }
+  ]
+}
