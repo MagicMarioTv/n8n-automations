@@ -1,0 +1,21 @@
+
+exec 189  webhook  success  2026-10-04T00:01:43.844Z
+  query: {"ai_tool": [[{"json": {"query": {"input": "promo in QC hold for 5 hours, what should have happened by now"}}}]]}
+   - qc-hold-procedure.md             current
+   - qc-hold-procedure.md             current
+   - promo-and-trailer-handling.md    current
+   - qc-hold-procedure.md             current
+
+exec 190  webhook  success  2026-10-04T00:01:44.619Z
+  query: {"ai_tool": [[{"json": {"query": {"input": "promo trailer QC hold 4 hour exception escalation"}}}]]}
+   - qc-hold-procedure.md             current
+   - promo-and-trailer-handling.md    current
+   - promo-and-trailer-handling.md    current
+   - qc-hold-procedure.md             current
+
+exec 191  webhook  success  2026-10-04T00:01:50.225Z
+  query: {"ai_tool": [[{"json": {"query": {"input": "on call escalation Tier 2 what happens when a QC hold is escalated"}}}]]}
+   - on-call-escalation.md            current
+   - qc-hold-procedure.md             current
+   - on-call-escalation.md            current
+   - qc-hold-procedure.md             current
