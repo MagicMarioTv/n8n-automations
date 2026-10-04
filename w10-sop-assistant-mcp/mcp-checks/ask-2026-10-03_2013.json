@@ -1,0 +1,84 @@
+[
+  {
+    "label": "initialize",
+    "auth": "correct",
+    "request": {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "initialize",
+      "params": {
+        "protocolVersion": "2026-07-28",
+        "capabilities": {},
+        "clientInfo": {
+          "name": "probe_w10_mcp",
+          "version": "1.0"
+        }
+      }
+    },
+    "status": 200,
+    "ms": 459,
+    "content_type": "text/event-stream",
+    "session_header": "5be1bc9d-3ac1-451b-a1ad-d8648b7504a0",
+    "raw": "event: message\ndata: {\"result\":{\"protocolVersion\":\"2025-11-25\",\"capabilities\":{\"tools\":{}},\"serverInfo\":{\"name\":\"MCP_Server_Trigger\",\"version\":\"0.1.0\"}},\"jsonrpc\":\"2.0\",\"id\":1}\n\n",
+    "parsed": {
+      "result": {
+        "protocolVersion": "2025-11-25",
+        "capabilities": {
+          "tools": {}
+        },
+        "serverInfo": {
+          "name": "MCP_Server_Trigger",
+          "version": "0.1.0"
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 1
+    }
+  },
+  {
+    "label": "initialized",
+    "auth": "correct",
+    "request": {
+      "jsonrpc": "2.0",
+      "method": "notifications/initialized"
+    },
+    "status": 202,
+    "ms": 330,
+    "content_type": "text/plain; charset=UTF-8",
+    "session_header": null,
+    "raw": "",
+    "parsed": null
+  },
+  {
+    "label": "ask",
+    "auth": "correct",
+    "request": {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "method": "tools/call",
+      "params": {
+        "name": "search_sops",
+        "arguments": {
+          "input": "How do I make pizza dough?"
+        }
+      }
+    },
+    "status": 200,
+    "ms": 664,
+    "content_type": "text/event-stream",
+    "session_header": "5be1bc9d-3ac1-451b-a1ad-d8648b7504a0",
+    "raw": "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"[{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"{\\\\\\\"pageContent\\\\\\\":\\\\\\\"# Promo and Trailer Handling\\\\\\\\n\\\\\\\\n**Doc ID:** SOP-SHF-001 · **Version:** 1.3 · **Effective:** 2026-02-01 · **Owner:** Media Operations · **Status:** Current\\\\\\\\n\\\\\\\\nEvery organisation, title, asset ID and process in this document is invented for a portfolio project.\\\\\\\\n\\\\\\\\n## 1. Why short form is different\\\\\\\\n\\\\\\\\nPromos and trailers are short, high volume and often turned around in a day. The full QC process is built for long form content and would add more time than the asset is long. This SOP lists where short form differs. Anything not listed here follows the normal SOPs.\\\\\\\\n\\\\\\\\n## 2. QC\\\\\\\\n\\\\\\\\n- **Promos:** spot check only. An operator watches the first 5 seconds, the last 5 seconds, and one random 5 second section. Automated checks for codec, bitrate and filename still run in full.\\\\\\\\n- **Trailers:** full QC, the same as long form. Trailers carry release dates and ratings cards, and an error there is visible to every viewer.\\\\\\\\n\\\\\\\\n## 3. Captions\\\\\\\",\\\\\\\"metadata\\\\\\\":{\\\\\\\"source\\\\\\\":\\\\\\\"promo-and-trailer-handling.md\\\\\\\",\\\\\\\"blobType\\\\\\\":\\\\\\\"text/plain\\\\\\\",\\\\\\\"loc\\\\\\\":{\\\\\\\"lines\\\\\\\":{\\\\\\\"from\\\\\\\":1,\\\\\\\"to\\\\\\\":16}},\\\\\\\"doc_id\\\\\\\":\\\\\\\"SOP-SHF-001\\\\\\\",\\\\\\\"version\\\\\\\":\\\\\\\"1.3\\\\\\\",\\\\\\\"effective\\\\\\\":\\\\\\\"2026-02-01\\\\\\\",\\\\\\\"status\\\\\\\":\\\\\\\"current\\\\\\\"},\\\\\\\"id\\\\\\\":\\\\\\\"1b419b44-3db1-4c41-b2cf-0483bd61f565\\\\\\\"}\\\"},{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"{\\\\\\\"pageContent\\\\\\\":\\\\\\\"## 4. Missed deadlines\\\\\\\\n\\\\\\\\nIf a deadline is missed:\\\\\\\\n\\\\\\\\n1. The Delivery Lead informs the platform partner the same business day.\\\\\\\\n2. A new deadline is agreed and written into the catalog. The original deadline is kept in the asset's history.\\\\\\\\n3. A missed feature deadline also goes to Tier 2 under SOP-OPS-004, because features have fixed marketing dates.\\\\\\\\n\\\\\\\\n## 5. Weekends\\\\\\\\n\\\\\\\\nDeadlines never fall on a weekend. A deadline calculated to land on a Saturday or Sunday moves back to the previous Friday.\\\\\\\",\\\\\\\"metadata\\\\\\\":{\\\\\\\"source\\\\\\\":\\\\\\\"delivery-deadlines.md\\\\\\\",\\\\\\\"blobType\\\\\\\":\\\\\\\"text/plain\\\\\\\",\\\\\\\"loc\\\\\\\":{\\\\\\\"lines\\\\\\\":{\\\\\\\"from\\\\\\\":26,\\\\\\\"to\\\\\\\":36}},\\\\\\\"doc_id\\\\\\\":\\\\\\\"SOP-DEL-001\\\\\\\",\\\\\\\"version\\\\\\\":\\\\\\\"2.0\\\\\\\",\\\\\\\"effective\\\\\\\":\\\\\\\"2026-03-01\\\\\\\",\\\\\\\"status\\\\\\\":\\\\\\\"current\\\\\\\"},\\\\\\\"id\\\\\\\":\\\\\\\"669c9d97-1d4f-4476-b6cc-5ff388c85ebc\\\\\\\"}\\\"},{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"{\\\\\\\"pageContent\\\\\\\":\\\\\\\"## 3. When Tier 1 escalates to Tier 2\\\\\\\\n\\\\\\\\n- A QC hold has not been cleared within its window (24 hours for long form and trailers, 4 hours for promos).\\\\\\\\n- The fault is in the encoding system rather than the source file.\\\\\\\\n- A missed feature deadline (SOP-DEL-001 section 4).\\\\\\\\n\\\\\\\\n## 4. When to go to Tier 3\\\\\\\\n\\\\\\\\n- Tier 2 has not resolved an incident within 4 hours.\\\\\\\\n- A platform partner has been told a deadline will be missed.\\\\\\\\n- Any incident affecting more than 20 assets at once.\\\\\\\\n\\\\\\\\n## 5. How to page\\\\\\\\n\\\\\\\\nPage through the on call rota tool, never by direct message. A page that is not acknowledged within the response time automatically goes to the next tier.\\\\\\\\n\\\\\\\\n## 6. After the incident\\\\\\\\n\\\\\\\\nEvery Tier 2 or Tier 3 incident gets a written review within 5 business days.\\\\\\\",\\\\\\\"metadata\\\\\\\":{\\\\\\\"source\\\\\\\":\\\\\\\"on-call-escalation.md\\\\\\\",\\\\\\\"blobType\\\\\\\":\\\\\\\"text/plain\\\\\\\",\\\\\\\"loc\\\\\\\":{\\\\\\\"lines\\\\\\\":{\\\\\\\"from\\\\\\\":21,\\\\\\\"to\\\\\\\":39}},\\\\\\\"doc_id\\\\\\\":\\\\\\\"SOP-OPS-004\\\\\\\",\\\\\\\"version\\\\\\\":\\\\\\\"2.2\\\\\\\",\\\\\\\"effective\\\\\\\":\\\\\\\"2026-07-15\\\\\\\",\\\\\\\"status\\\\\\\":\\\\\\\"current\\\\\\\"},\\\\\\\"id\\\\\\\":\\\\\\\"07ebee8a-9bdf-4cfd-a477-e5ac35446228\\\\\\\"}\\\"},{\\\"type\\\":\\\"text\\\",\\\"text\\\":\\\"{\\\\\\\"pageContent\\\\\\\":\\\\\\\"## 4. Audio renditions\\\\\\\\n\\\\\\\\nEvery asset gets an AAC stereo rendition at 128 kbps. Assets with a 5.1 mix also get an E-AC-3 5.1 rendition at 384 kbps.\\\\\\\\n\\\\\\\\n## 5. Platform differences\\\\\\\\n\\\\\\\\nPlatform A takes the full ladder. Platform B does not take the 360p rung, and takes the 2160p rung only for fea",
+    "parsed": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "[{\"type\":\"text\",\"text\":\"{\\\"pageContent\\\":\\\"# Promo and Trailer Handling\\\\n\\\\n**Doc ID:** SOP-SHF-001 · **Version:** 1.3 · **Effective:** 2026-02-01 · **Owner:** Media Operations · **Status:** Current\\\\n\\\\nEvery organisation, title, asset ID and process in this document is invented for a portfolio project.\\\\n\\\\n## 1. Why short form is different\\\\n\\\\nPromos and trailers are short, high volume and often turned around in a day. The full QC process is built for long form content and would add more time than the asset is long. This SOP lists where short form differs. Anything not listed here follows the normal SOPs.\\\\n\\\\n## 2. QC\\\\n\\\\n- **Promos:** spot check only. An operator watches the first 5 seconds, the last 5 seconds, and one random 5 second section. Automated checks for codec, bitrate and filename still run in full.\\\\n- **Trailers:** full QC, the same as long form. Trailers carry release dates and ratings cards, and an error there is visible to every viewer.\\\\n\\\\n## 3. Captions\\\",\\\"metadata\\\":{\\\"source\\\":\\\"promo-and-trailer-handling.md\\\",\\\"blobType\\\":\\\"text/plain\\\",\\\"loc\\\":{\\\"lines\\\":{\\\"from\\\":1,\\\"to\\\":16}},\\\"doc_id\\\":\\\"SOP-SHF-001\\\",\\\"version\\\":\\\"1.3\\\",\\\"effective\\\":\\\"2026-02-01\\\",\\\"status\\\":\\\"current\\\"},\\\"id\\\":\\\"1b419b44-3db1-4c41-b2cf-0483bd61f565\\\"}\"},{\"type\":\"text\",\"text\":\"{\\\"pageContent\\\":\\\"## 4. Missed deadlines\\\\n\\\\nIf a deadline is missed:\\\\n\\\\n1. The Delivery Lead informs the platform partner the same business day.\\\\n2. A new deadline is agreed and written into the catalog. The original deadline is kept in the asset's history.\\\\n3. A missed feature deadline also goes to Tier 2 under SOP-OPS-004, because features have fixed marketing dates.\\\\n\\\\n## 5. Weekends\\\\n\\\\nDeadlines never fall on a weekend. A deadline calculated to land on a Saturday or Sunday moves back to the previous Friday.\\\",\\\"metadata\\\":{\\\"source\\\":\\\"delivery-deadlines.md\\\",\\\"blobType\\\":\\\"text/plain\\\",\\\"loc\\\":{\\\"lines\\\":{\\\"from\\\":26,\\\"to\\\":36}},\\\"doc_id\\\":\\\"SOP-DEL-001\\\",\\\"version\\\":\\\"2.0\\\",\\\"effective\\\":\\\"2026-03-01\\\",\\\"status\\\":\\\"current\\\"},\\\"id\\\":\\\"669c9d97-1d4f-4476-b6cc-5ff388c85ebc\\\"}\"},{\"type\":\"text\",\"text\":\"{\\\"pageContent\\\":\\\"## 3. When Tier 1 escalates to Tier 2\\\\n\\\\n- A QC hold has not been cleared within its window (24 hours for long form and trailers, 4 hours for promos).\\\\n- The fault is in the encoding system rather than the source file.\\\\n- A missed feature deadline (SOP-DEL-001 section 4).\\\\n\\\\n## 4. When to go to Tier 3\\\\n\\\\n- Tier 2 has not resolved an incident within 4 hours.\\\\n- A platform partner has been told a deadline will be missed.\\\\n- Any incident affecting more than 20 assets at once.\\\\n\\\\n## 5. How to page\\\\n\\\\nPage through the on call rota tool, never by direct message. A page that is not acknowledged within the response time automatically goes to the next tier.\\\\n\\\\n## 6. After the incident\\\\n\\\\nEvery Tier 2 or Tier 3 incident gets a written review within 5 business days.\\\",\\\"metadata\\\":{\\\"source\\\":\\\"on-call-escalation.md\\\",\\\"blobType\\\":\\\"text/plain\\\",\\\"loc\\\":{\\\"lines\\\":{\\\"from\\\":21,\\\"to\\\":39}},\\\"doc_id\\\":\\\"SOP-OPS-004\\\",\\\"version\\\":\\\"2.2\\\",\\\"effective\\\":\\\"2026-07-15\\\",\\\"status\\\":\\\"current\\\"},\\\"id\\\":\\\"07ebee8a-9bdf-4cfd-a477-e5ac35446228\\\"}\"},{\"type\":\"text\",\"text\":\"{\\\"pageContent\\\":\\\"## 4. Audio renditions\\\\n\\\\nEvery asset gets an AAC stereo rendition at 128 kbps. Assets with a 5.1 mix also get an E-AC-3 5.1 rendition at 384 kbps.\\\\n\\\\n## 5. Platform differences\\\\n\\\\nPlatform A takes the full ladder. Platform B does not take the 360p rung, and takes the 2160p rung only for features marked as UHD titles in the catalog.\\\\n\\\\n## 6. Encode time\\\\n\\\\nPlan on encode time of roughly 1.5 times the asset's runtime for the standard ladder, and 3 times runtime when a 2160p rung is included. An asset stays in status `encoding` for that whole period.\\\",\\\"metadata\\\":{\\\"source\\\":\\\"encoding-ladder.md\\\",\\\"blobType\\\":\\\"text/plain\\\",\\\"loc\\\":{\\\"lines\\\":{\\\"from\\\":27,\\\"to\\\":37}},\\\"doc_id\\\":\\\"SOP-ENC-001\\\",\\\"version\\\":\\\"1.4\\\",\\\"effective\\\":\\\"2026-04-02\\\",\\\"status\\\":\\\"current\\\"},\\\"id\\\":\\\"aa1df9c4-c434-4c74-a927-f45fbd9754db\\\"}\"}]"
+          }
+        ]
+      },
+      "jsonrpc": "2.0",
+      "id": 2
+    }
+  }
+]
