@@ -26,30 +26,6 @@
       "webhookId": "3d1cf9a0-3519-4607-a8cf-c9cc1e4a9dc3"
     },
     {
-      "id": "452cadab-162e-4daa-8c5e-b04c29c676de",
-      "name": "Reset Collection",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        220,
-        0
-      ],
-      "parameters": {
-        "method": "DELETE",
-        "url": "http://qdrant:6333/collections/sop_corpus",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "qdrantApi",
-        "options": {}
-      },
-      "credentials": {
-        "qdrantApi": {
-          "id": "aPAYbZZJtp2ZJp8D",
-          "name": "W9 Qdrant (internal)"
-        }
-      },
-      "onError": "continueRegularOutput"
-    },
-    {
       "id": "417c548b-4bc9-4f14-9e0c-c5c701bd545f",
       "name": "Split Docs",
       "type": "n8n-nodes-base.code",
@@ -59,7 +35,7 @@
         0
       ],
       "parameters": {
-        "jsCode": "// The webhook body carries every SOP as { filename, text }.\n// Read it from the trigger by name: the reset node before this one replaced the item with Qdrant's reply.\nconst docs = $('Ingest Request').first().json.body.docs || [];\n\n// Each SOP opens with a header line like:\n//   **Doc ID:** SOP-QC-002 · **Version:** 2.1 · **Effective:** 2025-03-15 · **Status:** SUPERSEDED by SOP-QC-003 on 2026-06-01\n// Pull those facts out so every chunk can carry them, not only the chunk the header lands in.\nconst field = (text, label) => {\n  const m = text.match(new RegExp('\\\\*\\\\*' + label + ':\\\\*\\\\*\\\\s*([^·\\\\n]+)'));\n  return m ? m[1].trim() : '';\n};\n\nreturn docs.map(d => {\n  const statusText = field(d.text, 'Status');\n  return {\n    json: {\n      filename: d.filename,\n      text: d.text,\n      doc_id: field(d.text, 'Doc ID'),\n      version: field(d.text, 'Version'),\n      effective: field(d.text, 'Effective'),\n      // Only an explicit Current or Active is current. A missing or misspelled Status is unknown,\n      // because stamping it current would vouch for an edition nobody checked.\n      status: /^superseded/i.test(statusText) ? 'superseded: ' + statusText.replace(/^SUPERSEDED\\s*/i, '')\n            : /^(current|active)\\b/i.test(statusText) ? 'current'\n            : 'unknown',\n    },\n  };\n});\n"
+        "jsCode": "// The webhook body carries every SOP as { filename, text }.\n// Read it from the trigger by name: the reset node before this one replaced the item with Qdrant's reply.\nconst docs = $('Ingest Request').first().json.body.docs || [];\n\n// Each SOP opens with a header line like:\n//   **Doc ID:** SOP-QC-002 · **Version:** 2.1 · **Effective:** 2025-03-15 · **Status:** SUPERSEDED by SOP-QC-003 on 2026-06-01\n// Pull those facts out so every chunk can carry them, not only the chunk the header lands in.\nconst field = (text, label) => {\n  const m = text.match(new RegExp('\\\\*\\\\*' + label + ':\\\\*\\\\*\\\\s*([^·\\\\n]+)'));\n  return m ? m[1].trim() : '';\n};\n\nreturn docs.map(d => {\n  const statusText = field(d.text, 'Status');\n  return {\n    json: {\n      filename: d.filename,\n      // One id per ingest run. The prefix keeps it a string in Qdrant, so the delete filter can match it exactly.\n      ingest_id: 'ingest-' + $execution.id,\n      text: d.text,\n      doc_id: field(d.text, 'Doc ID'),\n      version: field(d.text, 'Version'),\n      effective: field(d.text, 'Effective'),\n      // Only an explicit Current or Active is current. A missing or misspelled Status is unknown,\n      // because stamping it current would vouch for an edition nobody checked.\n      status: /^superseded/i.test(statusText) ? 'superseded: ' + statusText.replace(/^SUPERSEDED\\s*/i, '')\n            : /^(current|active)\\b/i.test(statusText) ? 'current'\n            : 'unknown',\n    },\n  };\n});\n"
       }
     },
     {
@@ -142,6 +118,10 @@
               {
                 "name": "status",
                 "value": "={{ $json.status }}"
+              },
+              {
+                "name": "ingest_id",
+                "value": "={{ $json.ingest_id }}"
               }
             ]
           }
@@ -173,7 +153,7 @@
         0
       ],
       "parameters": {
-        "jsCode": "// One item comes out of the vector store per stored chunk. Count them per source file.\nconst perFile = {};\nfor (const item of $input.all()) {\n  const src = item.json.metadata?.source ?? 'unknown';\n  perFile[src] = (perFile[src] || 0) + 1;\n}\nreturn [{ json: { chunks: $input.all().length, files: Object.keys(perFile).length, perFile } }];\n"
+        "jsCode": "// One item comes out of the vector store per stored chunk. Count them per source file.\n// Guard: the next node deletes every point WITHOUT this run's ingest_id, so stop here unless\n// every chunk just stored carries it. A missing id would otherwise delete the new chunks too.\nconst ingestId = $('Split Docs').first().json.ingest_id;\nconst perFile = {};\nfor (const item of $input.all()) {\n  if (!ingestId || item.json.metadata?.ingest_id !== ingestId) {\n    throw new Error(`Chunk without ingest_id ${ingestId}; old chunks not deleted`);\n  }\n  const src = item.json.metadata?.source ?? 'unknown';\n  perFile[src] = (perFile[src] || 0) + 1;\n}\nreturn [{ json: { ingest_id: ingestId, chunks: $input.all().length, files: Object.keys(perFile).length, perFile } }];\n"
       }
     },
     {
@@ -182,7 +162,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        1220,
+        1880,
         0
       ],
       "parameters": {
@@ -315,21 +295,75 @@
           "name": "OpenAI account"
         }
       }
+    },
+    {
+      "id": "2fdb9144-e572-47f4-b76c-eb7b9079a547",
+      "name": "Delete Old Chunks",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1220,
+        0
+      ],
+      "credentials": {
+        "qdrantApi": {
+          "id": "aPAYbZZJtp2ZJp8D",
+          "name": "W9 Qdrant (internal)"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "http://qdrant:6333/collections/sop_corpus/points/delete?wait=true",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "qdrantApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ filter: { must_not: [ { key: \"metadata.ingest_id\", match: { value: $json.ingest_id } } ] } }) }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "9464fbf7-c82f-407e-981c-ab31e3c46075",
+      "name": "Count Points",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        0
+      ],
+      "credentials": {
+        "qdrantApi": {
+          "id": "aPAYbZZJtp2ZJp8D",
+          "name": "W9 Qdrant (internal)"
+        }
+      },
+      "parameters": {
+        "method": "POST",
+        "url": "http://qdrant:6333/collections/sop_corpus/points/count",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "qdrantApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"exact\": true}",
+        "options": {}
+      }
+    },
+    {
+      "id": "319ed9e6-5918-4c5b-9864-ea05d2ff0539",
+      "name": "Ingest Report",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1660,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// What the ingest caller gets back: the per-file counts, and proof the collection holds only this run.\nconst summary = $('Summarize Ingest').first().json;\nconst total = $json.result.count;\nreturn [{ json: { ...summary, old_chunks_deleted: $('Delete Old Chunks').first().json.status === 'ok',\n  points_in_collection: total, only_this_run: total === summary.chunks } }];\n"
+      }
     }
   ],
   "connections": {
     "Ingest Request": {
-      "main": [
-        [
-          {
-            "node": "Reset Collection",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Reset Collection": {
       "main": [
         [
           {
@@ -366,7 +400,7 @@
       "main": [
         [
           {
-            "node": "Send Ingest Result",
+            "node": "Delete Old Chunks",
             "type": "main",
             "index": 0
           }
@@ -456,6 +490,39 @@
           {
             "node": "sop_search",
             "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Old Chunks": {
+      "main": [
+        [
+          {
+            "node": "Count Points",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Count Points": {
+      "main": [
+        [
+          {
+            "node": "Ingest Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ingest Report": {
+      "main": [
+        [
+          {
+            "node": "Send Ingest Result",
+            "type": "main",
             "index": 0
           }
         ]

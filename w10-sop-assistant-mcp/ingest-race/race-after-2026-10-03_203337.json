@@ -1,0 +1,396 @@
+{
+  "label": "after",
+  "query": "What's the SLA for clearing a QC hold?",
+  "workers": 4,
+  "ingest": {
+    "start": 2.0,
+    "end": 5.8,
+    "output": "posting 10 docs, 15,737 characters\n200 {\n  \"ingest_id\": \"ingest-252\",\n  \"chunks\": 21,\n  \"files\": 10,\n  \"perFile\": {\n    \"caption-requirements.md\": 2,\n    \"delivery-deadlines.md\": 2,\n    \"encoding-ladder.md\": 2,\n    \"mezzanine-spec.md\": 2,\n    \"naming-conventions.md\": 2,\n    \"on-call-escalation.md\": 2,\n    \"promo-and-trailer-handling.md\": 2,\n    \"qc-hold-procedure-2025.md\": 2,\n    \"qc-hold-procedure.md\": 3,\n    \"redelivery-policy.md\": 2\n  },\n  \"old_chunks_deleted\": true,\n  \"points_in_collection\": 21,\n  \"only_this_run\": true\n}\n"
+  },
+  "summary": {
+    "before ingest": {
+      "queries": 4,
+      "4 passages": 4,
+      "fewer": 0,
+      "zero": 0,
+      "errors": 0
+    },
+    "during ingest": {
+      "queries": 9,
+      "4 passages": 9,
+      "fewer": 0,
+      "zero": 0,
+      "errors": 0
+    },
+    "after ingest": {
+      "queries": 6,
+      "4 passages": 6,
+      "fewer": 0,
+      "zero": 0,
+      "errors": 0
+    }
+  },
+  "rows": [
+    {
+      "worker": 2,
+      "sent": 0.0,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-234"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 1.3,
+      "phase": "before ingest"
+    },
+    {
+      "worker": 3,
+      "sent": 0.0,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-234"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 1.33,
+      "phase": "before ingest"
+    },
+    {
+      "worker": 0,
+      "sent": 0.0,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-234"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 1.61,
+      "phase": "before ingest"
+    },
+    {
+      "worker": 1,
+      "sent": 0.0,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-234"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 1.75,
+      "phase": "before ingest"
+    },
+    {
+      "worker": 2,
+      "sent": 1.3,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-234"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 3.13,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 3,
+      "sent": 1.33,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-234"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 3.57,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 0,
+      "sent": 1.61,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-234"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 3.61,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 1,
+      "sent": 1.75,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-234"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 3.59,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 2,
+      "sent": 3.13,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-252"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 5.67,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 3,
+      "sent": 3.57,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-252"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 6.47,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 1,
+      "sent": 3.59,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-252"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 6.17,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 0,
+      "sent": 3.61,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-252"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 6.14,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 2,
+      "sent": 5.67,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-252"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 6.87,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 0,
+      "sent": 6.14,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-252"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 7.31,
+      "phase": "after ingest"
+    },
+    {
+      "worker": 1,
+      "sent": 6.17,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-252"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 7.59,
+      "phase": "after ingest"
+    },
+    {
+      "worker": 3,
+      "sent": 6.47,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-252"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 8.18,
+      "phase": "after ingest"
+    },
+    {
+      "worker": 2,
+      "sent": 6.87,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-252"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 8.68,
+      "phase": "after ingest"
+    },
+    {
+      "worker": 0,
+      "sent": 7.31,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-252"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 8.63,
+      "phase": "after ingest"
+    },
+    {
+      "worker": 1,
+      "sent": 7.59,
+      "passages": 4,
+      "chunks": [
+        "qc-hold-procedure.md:{'from': 28, 'to': 40}",
+        "qc-hold-procedure.md:{'from': 14, 'to': 28}",
+        "qc-hold-procedure.md:{'from': 1, 'to': 14}",
+        "redelivery-policy.md:{'from': 19, 'to': 31}"
+      ],
+      "duplicates": 0,
+      "ingest_ids": [
+        "ingest-252"
+      ],
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 8.7,
+      "phase": "after ingest"
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "label": "after",
+  "query": "What's the SLA for clearing a QC hold?",
+  "workers": 4,
+  "ingest": {
+    "start": 2.0,
+    "end": 7.18,
+    "output": "posting 10 docs, 15,737 characters\n200 {\n  \"ingest_id\": \"ingest-234\",\n  \"chunks\": 21,\n  \"files\": 10,\n  \"perFile\": {\n    \"caption-requirements.md\": 2,\n    \"delivery-deadlines.md\": 2,\n    \"encoding-ladder.md\": 2,\n    \"mezzanine-spec.md\": 2,\n    \"naming-conventions.md\": 2,\n    \"on-call-escalation.md\": 2,\n    \"promo-and-trailer-handling.md\": 2,\n    \"qc-hold-procedure-2025.md\": 2,\n    \"qc-hold-procedure.md\": 3,\n    \"redelivery-policy.md\": 2\n  },\n  \"old_chunks_deleted\": true,\n  \"points_in_collection\": 21,\n  \"only_this_run\": true\n}\n"
+  },
+  "summary": {
+    "before ingest": {
+      "queries": 4,
+      "4 passages": 4,
+      "fewer": 0,
+      "zero": 0,
+      "errors": 0
+    },
+    "during ingest": {
+      "queries": 9,
+      "4 passages": 9,
+      "fewer": 0,
+      "zero": 0,
+      "errors": 0
+    },
+    "after ingest": {
+      "queries": 4,
+      "4 passages": 4,
+      "fewer": 0,
+      "zero": 0,
+      "errors": 0
+    }
+  },
+  "rows": [
+    {
+      "worker": 0,
+      "sent": 0.0,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 1.31,
+      "phase": "before ingest"
+    },
+    {
+      "worker": 2,
+      "sent": 0.0,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 1.34,
+      "phase": "before ingest"
+    },
+    {
+      "worker": 3,
+      "sent": 0.0,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 1.53,
+      "phase": "before ingest"
+    },
+    {
+      "worker": 1,
+      "sent": 0.0,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 1.89,
+      "phase": "before ingest"
+    },
+    {
+      "worker": 0,
+      "sent": 1.31,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 4.22,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 2,
+      "sent": 1.34,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 4.14,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 3,
+      "sent": 1.53,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 4.12,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 1,
+      "sent": 1.89,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 4.11,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 1,
+      "sent": 4.11,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 7.83,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 3,
+      "sent": 4.12,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 7.13,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 2,
+      "sent": 4.14,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 7.43,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 0,
+      "sent": 4.22,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 7.51,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 3,
+      "sent": 7.13,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 8.4,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 2,
+      "sent": 7.43,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 9.54,
+      "phase": "after ingest"
+    },
+    {
+      "worker": 0,
+      "sent": 7.51,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 9.55,
+      "phase": "after ingest"
+    },
+    {
+      "worker": 1,
+      "sent": 7.83,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 9.78,
+      "phase": "after ingest"
+    },
+    {
+      "worker": 3,
+      "sent": 8.4,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 9.59,
+      "phase": "after ingest"
+    }
+  ]
+}
