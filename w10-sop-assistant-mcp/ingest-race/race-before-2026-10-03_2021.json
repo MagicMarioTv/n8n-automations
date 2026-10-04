@@ -1,0 +1,197 @@
+{
+  "label": "before",
+  "query": "What's the SLA for clearing a QC hold?",
+  "workers": 4,
+  "ingest": {
+    "start": 2.0,
+    "end": 5.19,
+    "output": "posting 10 docs, 15,737 characters\n200 {\n  \"chunks\": 21,\n  \"files\": 10,\n  \"perFile\": {\n    \"caption-requirements.md\": 2,\n    \"delivery-deadlines.md\": 2,\n    \"encoding-ladder.md\": 2,\n    \"mezzanine-spec.md\": 2,\n    \"naming-conventions.md\": 2,\n    \"on-call-escalation.md\": 2,\n    \"promo-and-trailer-handling.md\": 2,\n    \"qc-hold-procedure-2025.md\": 2,\n    \"qc-hold-procedure.md\": 3,\n    \"redelivery-policy.md\": 2\n  }\n}\n"
+  },
+  "summary": {
+    "before ingest": {
+      "queries": 3,
+      "4 passages": 3,
+      "fewer": 0,
+      "zero": 0,
+      "errors": 0
+    },
+    "during ingest": {
+      "queries": 10,
+      "4 passages": 6,
+      "fewer": 0,
+      "zero": 2,
+      "errors": 2
+    },
+    "after ingest": {
+      "queries": 5,
+      "4 passages": 5,
+      "fewer": 0,
+      "zero": 0,
+      "errors": 0
+    }
+  },
+  "rows": [
+    {
+      "worker": 1,
+      "sent": 0.0,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 1.65,
+      "phase": "before ingest"
+    },
+    {
+      "worker": 0,
+      "sent": 0.0,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 1.72,
+      "phase": "before ingest"
+    },
+    {
+      "worker": 2,
+      "sent": 0.0,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 1.99,
+      "phase": "before ingest"
+    },
+    {
+      "worker": 3,
+      "sent": 0.0,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 2.11,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 1,
+      "sent": 1.65,
+      "passages": 0,
+      "error": null,
+      "raw_if_empty": "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"[]\"}]},\"jsonrpc\":\"2.0\",\"id\":2002}\n\n",
+      "recv": 4.22,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 0,
+      "sent": 1.72,
+      "passages": 1,
+      "error": "[{\"type\": \"text\", \"text\": \"NodeOperationError: Conflict\"}]",
+      "raw_if_empty": null,
+      "recv": 4.41,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 2,
+      "sent": 1.99,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 3.49,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 3,
+      "sent": 2.11,
+      "passages": 0,
+      "error": null,
+      "raw_if_empty": "event: message\ndata: {\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"[]\"}]},\"jsonrpc\":\"2.0\",\"id\":4002}\n\n",
+      "recv": 4.24,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 2,
+      "sent": 3.49,
+      "passages": 1,
+      "error": "[{\"type\": \"text\", \"text\": \"NodeOperationError: Conflict\"}]",
+      "raw_if_empty": null,
+      "recv": 4.5,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 1,
+      "sent": 4.22,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 5.85,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 3,
+      "sent": 4.24,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 5.86,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 0,
+      "sent": 4.41,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 5.79,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 2,
+      "sent": 4.5,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 6.2,
+      "phase": "during ingest"
+    },
+    {
+      "worker": 0,
+      "sent": 5.79,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 6.92,
+      "phase": "after ingest"
+    },
+    {
+      "worker": 1,
+      "sent": 5.85,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 7.83,
+      "phase": "after ingest"
+    },
+    {
+      "worker": 3,
+      "sent": 5.86,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 7.78,
+      "phase": "after ingest"
+    },
+    {
+      "worker": 2,
+      "sent": 6.2,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 7.71,
+      "phase": "after ingest"
+    },
+    {
+      "worker": 0,
+      "sent": 6.92,
+      "passages": 4,
+      "error": null,
+      "raw_if_empty": null,
+      "recv": 7.92,
+      "phase": "after ingest"
+    }
+  ]
+}
