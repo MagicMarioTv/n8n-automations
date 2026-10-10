@@ -270,6 +270,8 @@ A review note written after the value, `true (No SLA rules)`. JSON has no commen
 
 Project 2 (ships 10/10) builds on this directly:
 
+**Done in [w10-sop-assistant-mcp](../w10-sop-assistant-mcp), 10/3 to 10/10:** items 1 and 2, and Langfuse. Item 3 turned out not to work with this n8n version (a search through an alias fails) and was replaced by an ingest that replaces chunks in place. **The live workflow has changed since this folder's `workflow.json`;** the current export is w10's [`chat-workflow.json`](../w10-sop-assistant-mcp/chat-workflow.json).
+
 1. **Filter out superseded chunks at retrieval** (a metadata filter on `status`), or add the Cohere reranker node that is already on this instance. Then re-run the same twenty and compare Q17.
 2. **Expose `sop_search` over MCP** with the MCP Server Trigger, so Claude or any MCP client can query the SOPs as a tool. The README for that cites the NSA/CISA MCP security guidance and OWASP ASI04.
 3. **Ingest by alias swap:** build `sop_corpus_<timestamp>`, then move an alias, so a question never lands on an empty collection.

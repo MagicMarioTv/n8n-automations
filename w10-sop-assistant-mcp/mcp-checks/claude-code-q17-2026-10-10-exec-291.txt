@@ -1,0 +1,20 @@
+Ship day check, 10/10/2026: one search_sops call from Claude Code over MCP
+
+Client: Claude Code, server registered as sop-n8n (HTTP transport, Bearer header).
+Query: golden set Q17, word for word, sent as the tool input (no rewording by the client).
+Confirmed on the server through the n8n public API, not from the client side alone.
+
+exec 291  webhook  success  2026-10-10T15:51:29.234Z
+  query: {"ai_tool": [[{"json": {"query": {"input": "A promo has been sitting in qc_hold for 5 hours. What should have happened by now?"}}}]]}
+   - qc-hold-procedure.md               current    ingest-252
+   - qc-hold-procedure.md               current    ingest-252
+   - qc-hold-procedure.md               current    ingest-252
+   - promo-and-trailer-handling.md      current    ingest-252
+
+What came back, as Claude Code showed it: a list of four items, each a JSON object with
+pageContent, metadata (source, doc_id, version, effective, status, ingest_id, loc, blobType)
+and id. On the wire (see the 10/3 probe record) that list is itself the text of one MCP text block.
+The fourth passage carries the promo rule: "A promo in qc_hold is escalated after 4 hours
+rather than 24". on-call-escalation.md (what escalation means, Tier 2) is not in the top 4
+for this wording, the same as on 10/3 (executions 189 to 191, where the client needed a
+third search to reach it). Every passage is from ingest-252, the last in place ingest.
