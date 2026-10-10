@@ -239,10 +239,10 @@ Langfuse organizations created on or after 9/16/2026 must use the v2 observation
 
 | NSA recommendation | What this build does | What it doesn't |
 |---|---|---|
-| **Choose supported MCP projects** | The server is n8n's own MCP Server Trigger node and the client is Claude Code. No community MCP server is installed. | The n8n version is behind; see item 8. |
+| **Choose supported MCP projects** | The server is n8n's own MCP Server Trigger node and the client is Claude Code. No third party MCP server runs on the VPS. | The n8n version is behind; see item 8. |
 | **Design for boundaries** | Qdrant has no published port and needs a key. The endpoint can only search: ingest and chat sit behind their own separate credentials. The corpus is invented, so the data is public grade. | No outgoing proxy: n8n calls OpenAI directly. |
 | **Validate parameters** | One tool, one string input, required by the schema n8n publishes. | No length limit of its own, and the published schema allows extra properties. |
-| **Constrain and sandbox tool execution** | The tool is a read only search. No shell, no file access, no writes. The workflow holds three credentials: its token, Qdrant and OpenAI. | The Qdrant key it uses is the full access key. Qdrant supports a separate read only key, and this tool should use one. |
+| **Constrain and sandbox tool execution** | The tool is a read only search. No shell, no file access, no writes. The workflow holds three credentials: its token, Qdrant and OpenAI. | The Qdrant key it uses is the full access key. Qdrant supports a separate read only key (`QDRANT__SERVICE__READ_ONLY_API_KEY`, since v1.7.0; this box runs 1.19.1), and this tool should use one. |
 | **Sign and verify MCP messages** | TLS from Caddy, a Bearer token on every request. | No message signing, no expiry, no replay protection. The token is static and shared. |
 | **Filter and monitor output pipelines** | Passages come only from a corpus behind a gated ingest, so anything in them came through the ingest token. | Passages go out verbatim with no output filtering. A poisoned SOP would reach the client model as written; the client is the last line. |
 | **Instrument for logging and detection** | Every call is an n8n execution with the query and the passages returned, readable through the API (execution 291 was checked that way). Scored runs are traced in Langfuse. | No caller identity beyond the shared token, and nothing feeds an alerting system. |
@@ -265,7 +265,7 @@ Langfuse organizations created on or after 9/16/2026 must use the v2 observation
 
 ## Why MCP, in this industry
 
-At IBC 2026 in September, media vendors started shipping this shape. Tedial announced MCP for its media supply chain platform ([TV Technology, 8/26](https://www.tvtechnology.com/infrastructure/tedial-to-demo-ai-driven-media-supply-chain-solutions-at-ibc-2026)), and a [Key Code Media roundup](https://www.keycodemedia.com/ibc-2026-the-biggest-broadcast-production-and-av-technology-announcements/) reports Telestream adopting MCP, Imagine Communications adding MCP connectivity, and Backlight introducing an Iconik MCP server. They point approved AI assistants at the systems that run content operations. This build is the same idea at portfolio scale: an assistant of your choosing, searching operating procedures it was never trained on, through a gate.
+At IBC 2026 in September, media vendors announced this shape. Tedial announced MCP for its media supply chain platform ([TV Technology, 8/26](https://www.tvtechnology.com/infrastructure/tedial-to-demo-ai-driven-media-supply-chain-solutions-at-ibc-2026)), and a [Key Code Media roundup](https://www.keycodemedia.com/ibc-2026-the-biggest-broadcast-production-and-av-technology-announcements/) reports Telestream adopting MCP, Imagine Communications adding MCP connectivity, and Backlight introducing an Iconik MCP server. They point approved AI assistants at the systems that run content operations. This build is the same idea at portfolio scale: an assistant of your choosing, searching operating procedures it was never trained on, through a gate.
 
 ---
 
