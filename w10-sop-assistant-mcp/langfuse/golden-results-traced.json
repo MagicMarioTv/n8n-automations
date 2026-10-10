@@ -1,0 +1,333 @@
+{
+  "summary": {
+    "run_at": "2026-10-09 20:10",
+    "questions": 20,
+    "answer_correct": 20,
+    "citation_correct": 18,
+    "both_correct": 18,
+    "prompt_tokens": 75544,
+    "completion_tokens": 2643,
+    "cost_usd_haiku": 0.08876,
+    "latency_ms_median": 2791
+  },
+  "results": [
+    {
+      "id": "Q01",
+      "category": "single fact",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "mezzanine-spec.md"
+      ],
+      "execution": 271,
+      "llm_calls": 2,
+      "latency_ms": 4228,
+      "prompt_tokens": 3560,
+      "completion_tokens": 94,
+      "reply": "The minimum mezzanine bitrate for a feature is **20 Mbps** [mezzanine-spec.md].",
+      "trace_id": "ac7bed50b4d5c1168cf313ed12078ebe"
+    },
+    {
+      "id": "Q02",
+      "category": "single fact",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "mezzanine-spec.md"
+      ],
+      "execution": 272,
+      "llm_calls": 2,
+      "latency_ms": 2704,
+      "prompt_tokens": 3694,
+      "completion_tokens": 118,
+      "reply": "The accepted video codecs for a mezzanine file are:\n\n- **H.264 High Profile**, or\n- **Apple ProRes 422 HQ**\n\nNo other codec is accepted. [mezzanine-spec.md]",
+      "trace_id": "f1da4d1ef14d7419b84edb93282ff121"
+    },
+    {
+      "id": "Q03",
+      "category": "single fact",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "encoding-ladder.md"
+      ],
+      "execution": 273,
+      "llm_calls": 2,
+      "latency_ms": 2937,
+      "prompt_tokens": 3560,
+      "completion_tokens": 95,
+      "reply": "The 720p rung of the encoding ladder has a video bitrate of **3.5 Mbps** [encoding-ladder.md].",
+      "trace_id": "33fecc29286ff5e6d74beda889e89812"
+    },
+    {
+      "id": "Q04",
+      "category": "conditional",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "encoding-ladder.md"
+      ],
+      "execution": 274,
+      "llm_calls": 2,
+      "latency_ms": 2665,
+      "prompt_tokens": 3578,
+      "completion_tokens": 122,
+      "reply": "No. Episodes never get a 2160p rung, even if the source is UHD. The 2160p rung is only for features supplied with a 3840x2160 mezzanine. [encoding-ladder.md]",
+      "trace_id": "1622ded9de0a1c2f869290eb1d0705ef"
+    },
+    {
+      "id": "Q05",
+      "category": "single fact",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "caption-requirements.md"
+      ],
+      "execution": 275,
+      "llm_calls": 2,
+      "latency_ms": 2762,
+      "prompt_tokens": 3332,
+      "completion_tokens": 83,
+      "reply": "The maximum number of characters per caption line is **32 characters** [caption-requirements.md].",
+      "trace_id": "b3a3a838fb0b4283fed5f8f505184f7a"
+    },
+    {
+      "id": "Q06",
+      "category": "conditional",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "caption-requirements.md"
+      ],
+      "execution": 276,
+      "llm_calls": 2,
+      "latency_ms": 2627,
+      "prompt_tokens": 3442,
+      "completion_tokens": 117,
+      "reply": "No. A 10 second promo does not need captions. Promos require captions only when they are longer than 15 seconds; a 15 second or shorter promo may be delivered without captions. [caption-requirements.md]",
+      "trace_id": "f27dafd8226f4dd338bcba9e0c16838f"
+    },
+    {
+      "id": "Q07",
+      "category": "single fact",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "naming-conventions.md"
+      ],
+      "execution": 277,
+      "llm_calls": 2,
+      "latency_ms": 5274,
+      "prompt_tokens": 3764,
+      "completion_tokens": 262,
+      "reply": "Based on the naming conventions, the mezzanine filename for version 1 of TT-0142, Harbor Lights season 2 episode 7 should be:\n\n**`TT-0142_HarborLights_S02E07_MEZZ_v01.mov`**\n\nThe pattern is `<AssetID>_<TitleNoSpaces>_<Episode>_<Type>_v<NN>.<ext>`, where:\n- AssetID: `TT-0142`\n- TitleNoSpaces: `HarborLights` (PascalCase, no spaces)\n- Episode: `S02E07`\n- Type: `MEZZ` (for mezzanine)\n- Version: `v01`\n- Extension: `.mov` (QuickTime format)\n\n[naming-conventions.md]",
+      "trace_id": "5df3372a996b82010018be7696a119ad"
+    },
+    {
+      "id": "Q08",
+      "category": "single fact",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "delivery-deadlines.md"
+      ],
+      "execution": 278,
+      "llm_calls": 2,
+      "latency_ms": 2350,
+      "prompt_tokens": 3359,
+      "completion_tokens": 85,
+      "reply": "An episode must be delivered **5 business days before go live** [delivery-deadlines.md].",
+      "trace_id": "7f3ffde96f5062e327b487cb9d36c3a6"
+    },
+    {
+      "id": "Q09",
+      "category": "single fact",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "delivery-deadlines.md"
+      ],
+      "execution": 279,
+      "llm_calls": 2,
+      "latency_ms": 2305,
+      "prompt_tokens": 3391,
+      "completion_tokens": 108,
+      "reply": "An asset is **at risk** when its deadline is less than 48 hours away and its status is anything other than `delivered`. At-risk assets are listed in the morning ops report. [delivery-deadlines.md]",
+      "trace_id": "fb30e206a80285f78294d4317657775b"
+    },
+    {
+      "id": "Q10",
+      "category": "single fact",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "delivery-deadlines.md"
+      ],
+      "execution": 280,
+      "llm_calls": 2,
+      "latency_ms": 2456,
+      "prompt_tokens": 3345,
+      "completion_tokens": 91,
+      "reply": "If a delivery deadline is calculated to land on a Saturday or Sunday, it moves back to the previous Friday. [delivery-deadlines.md]",
+      "trace_id": "77a8fbe6809637ddb26c43791682c764"
+    },
+    {
+      "id": "Q11",
+      "category": "single fact",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "redelivery-policy.md"
+      ],
+      "execution": 281,
+      "llm_calls": 2,
+      "latency_ms": 2658,
+      "prompt_tokens": 3367,
+      "completion_tokens": 112,
+      "reply": "An asset may be redelivered **at most twice**. A third redelivery requires approval from the **Post Production Supervisor**, and the asset is flagged in the monthly quality review. [redelivery-policy.md]",
+      "trace_id": "9e91db9161e7a7d6106bcc02d3df6a46"
+    },
+    {
+      "id": "Q12",
+      "category": "single fact",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "redelivery-policy.md"
+      ],
+      "execution": 282,
+      "llm_calls": 2,
+      "latency_ms": 2403,
+      "prompt_tokens": 3317,
+      "completion_tokens": 92,
+      "reply": "A redelivery must reach the platform within **72 hours** of the fix being approved. [redelivery-policy.md]",
+      "trace_id": "c4ce4233b4baf776c972ed55171a9fe0"
+    },
+    {
+      "id": "Q13",
+      "category": "single fact",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "on-call-escalation.md"
+      ],
+      "execution": 283,
+      "llm_calls": 2,
+      "latency_ms": 3516,
+      "prompt_tokens": 3518,
+      "completion_tokens": 156,
+      "reply": "Page **Tier 1 (Media Operations on call)** through the on call rota tool. Three or more assets failing QC within one hour is a Tier 1 escalation trigger, which requires a 15-minute response time. [on-call-escalation.md]\n\nMake sure to page through the on call rota tool, not by direct message. [on-call-escalation.md]",
+      "trace_id": "6bb9d474a988e64da1af775d9285c7b9"
+    },
+    {
+      "id": "Q14",
+      "category": "contradiction",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "qc-hold-procedure.md"
+      ],
+      "execution": 284,
+      "llm_calls": 2,
+      "latency_ms": 3332,
+      "prompt_tokens": 3403,
+      "completion_tokens": 176,
+      "reply": "A QC hold must be cleared or escalated within **24 hours** of being raised. The clock runs on calendar hours, including weekends. If the asset's delivery deadline is less than 48 hours away when the hold is raised, the QC Lead is notified immediately rather than at the end of the 24-hour window. If the hold is not cleared within that time, it is escalated to Tier 2 under the On Call Escalation SOP. [qc-hold-procedure.md]",
+      "trace_id": "c01983feabaaba1b594b5a738d0f0112"
+    },
+    {
+      "id": "Q15",
+      "category": "contradiction",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "qc-hold-procedure.md"
+      ],
+      "execution": 285,
+      "llm_calls": 2,
+      "latency_ms": 2820,
+      "prompt_tokens": 3404,
+      "completion_tokens": 119,
+      "reply": "No. The operator who raised a QC hold cannot clear it themselves. Only the **QC Lead on shift** can clear a hold. This separation of duties was introduced in version 3.0 of the procedure. [qc-hold-procedure.md]",
+      "trace_id": "67fdcfb38ae859263a60cc5a56b3fcc3"
+    },
+    {
+      "id": "Q16",
+      "category": "cross document",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [
+        "caption-requirements.md",
+        "qc-hold-procedure.md"
+      ],
+      "execution": 286,
+      "llm_calls": 2,
+      "latency_ms": 3335,
+      "prompt_tokens": 4949,
+      "completion_tokens": 178,
+      "reply": "No. **Caption failures cannot be waived.** [caption-requirements.md] [qc-hold-procedure.md]\n\nThe SOPs explicitly state that waivers are only allowed for black frame and runtime triggers. Caption and spec failures are not eligible for waiver, regardless of deadline pressure. [qc-hold-procedure.md]",
+      "trace_id": "50a34c5da1b839fc17d1760e3074842a"
+    },
+    {
+      "id": "Q17",
+      "category": "cross document",
+      "answer_ok": true,
+      "citation_ok": false,
+      "cited": [
+        "promo-and-trailer-handling.md",
+        "qc-hold-procedure.md"
+      ],
+      "execution": 287,
+      "llm_calls": 2,
+      "latency_ms": 3725,
+      "prompt_tokens": 3414,
+      "completion_tokens": 189,
+      "reply": "By now, the promo should have been **escalated to Tier 2**.\n\nPromos have a shorter QC hold window than other assets. A promo in `qc_hold` must be cleared or escalated after **4 hours**, not the standard 24 hours [promo-and-trailer-handling.md]. Since this promo has been sitting in qc_hold for 5 hours, it has already exceeded that window and should have been escalated under the On Call Escalation SOP [qc-hold-procedure.md].",
+      "trace_id": "d9b5466a8d628268d195845b99197acb"
+    },
+    {
+      "id": "Q18",
+      "category": "cross document",
+      "answer_ok": true,
+      "citation_ok": false,
+      "cited": [
+        "mezzanine-spec.md"
+      ],
+      "execution": 288,
+      "llm_calls": 2,
+      "latency_ms": 3116,
+      "prompt_tokens": 3578,
+      "completion_tokens": 159,
+      "reply": "An episode's mezzanine at 6 Mbps goes to `qc_hold` because it falls below the minimum bitrate requirement. [mezzanine-spec.md]\n\nAccording to the spec, episodes must have a minimum bitrate of 8 Mbps. A file below this minimum is held in QC and does not proceed to encoding. [mezzanine-spec.md]",
+      "trace_id": "9ee87408cee6df6be80fcf3ed9597d00"
+    },
+    {
+      "id": "Q19",
+      "category": "not covered",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [],
+      "execution": 289,
+      "llm_calls": 3,
+      "latency_ms": 4103,
+      "prompt_tokens": 8025,
+      "completion_tokens": 187,
+      "reply": "The SOPs do not cover target loudness for programme audio. The search results only mention audio track specifications (sample rate, bit depth, and codec) but do not include loudness requirements.",
+      "trace_id": "63dbacd938ed8c5f77cd678f431eb831"
+    },
+    {
+      "id": "Q20",
+      "category": "not covered",
+      "answer_ok": true,
+      "citation_ok": true,
+      "cited": [],
+      "execution": 290,
+      "llm_calls": 2,
+      "latency_ms": 2720,
+      "prompt_tokens": 3544,
+      "completion_tokens": 100,
+      "reply": "The SOPs do not cover which cloud provider runs the encoders. The search results describe the encoding ladder and mezzanine specifications, but don't mention the infrastructure or cloud provider used.",
+      "trace_id": "52f4371923a2ccf7ef4c7e1dd3073703"
+    }
+  ]
+}
