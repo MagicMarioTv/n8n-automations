@@ -6,7 +6,7 @@ The headline numbers. The golden set's one real miss, Q17, is fixed in its answe
 
 Built 10/3 to 10/10/2026 on the instance from [w6-vps-deploy](../w6-vps-deploy). Every SOP, title and process in the corpus is invented.
 
-**▶ [Walkthrough video](https://www.loom.com/share/1404deec8dd842cebafd55f93ed1f014)** (4:37), recorded 10/12. The post is still to come and will be linked here.
+**Project 2, complete.** **▶ [Walkthrough video](https://www.loom.com/share/1404deec8dd842cebafd55f93ed1f014)** (4:37), recorded 10/12. The [LinkedIn post](https://lnkd.in/p/ea4zB2fp) that closed the project, 10/12, is the short version.
 
 ---
 
@@ -310,5 +310,5 @@ Following the repo's rule since 9/14: a README may claim something works only if
 - **Ingest in place:** ingest-234 and ingest-252 each returned `only_this_run: true` with 21 points; the race records show 9 of 9 overlapping queries full both times.
 - **The alias failure:** execution 228, a throwaway workflow, deleted afterwards; the alias was removed and `Aliases After` returned an empty list.
 - **Latency:** ten timed `tools/call` requests ([record](mcp-checks/latency-2026-10-03_2010.json)), with per node times read from each execution.
-- **Phone check:** 10/12, execution 323, production mode (`webhook`), from Mario's phone (his report; the execution record doesn't show the device or the network). One question, golden Q17 word for word, in a fresh session: "escalated to Tier 2", the 4 hour promo window, citing `promo-and-trailer-handling.md` and `qc-hold-procedure.md`. It was not w9's two turn check (the SLA, then "And for a promo?"), so memory across turns was last checked from a phone on 9/26 (executions 108 and 109).
+- **Phone check:** 10/12, execution 323, production mode (`webhook`), from Mario's phone on cellular with Wi-Fi off (his report; the execution record doesn't show the device or the network). One question, golden Q17 word for word, in a fresh session: "escalated to Tier 2", the 4 hour promo window, citing `promo-and-trailer-handling.md` and `qc-hold-procedure.md`. It was not w9's two turn check (the SLA, then "And for a promo?"), so memory across turns was last checked from a phone on 9/26 (executions 108 and 109).
 - **Exports:** `workflow.json` and `chat-workflow.json` are instance exports with `pinData`, `versionId`, `meta` and `staticData` removed, checked by script for every token and key by value before each commit.
