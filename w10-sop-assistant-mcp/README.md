@@ -6,7 +6,7 @@ The headline numbers. The golden set's one real miss, Q17, is fixed in its answe
 
 Built 10/3 to 10/10/2026 on the instance from [w6-vps-deploy](../w6-vps-deploy). Every SOP, title and process in the corpus is invented.
 
-The walkthrough video and the post are still to come and will be linked here.
+**▶ [Walkthrough video](https://www.loom.com/share/1404deec8dd842cebafd55f93ed1f014)** (4:37), recorded 10/12. The post is still to come and will be linked here.
 
 ---
 
