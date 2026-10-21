@@ -1,0 +1,49 @@
+Client check, 10/21/2026: does a client use get_status_vocabulary without being told to?
+
+Client: Claude Code 2.1.306, headless (claude -p), server registered as fallback-n8n (HTTP transport,
+Bearer header from an environment variable), with only this server's three tools allowed. Server: the
+committed workflow.json and tracker-workflow.json, imported into a local n8n 2.35.7 and published.
+Confirmed on the server through the n8n public API. Neither prompt names the vocabulary tool; the only
+thing pointing a client at it is its own description. One run of each prompt.
+
+RUN A, the prompt from the two tool check, word for word:
+"Using the fallback-n8n server's tools, list the fallback bucket for Discovery+, then open each row and tell me in one line per row what you think it needs. Do not do anything else."
+
+exec 91  webhook success  2026-10-21T16:42:27.194Z  list_fallback_rows {"platform": "Discovery+", "limit": 50}   (tracker: exec 90)
+exec 93  webhook success  2026-10-21T16:42:28.887Z  get_fallback_row {"row_id": "FB-1002"}   (tracker: exec 92)
+exec 95  webhook success  2026-10-21T16:42:29.249Z  get_fallback_row {"row_id": "FB-1009"}   (tracker: exec 94)
+exec 97  webhook success  2026-10-21T16:42:29.411Z  get_fallback_row {"row_id": "FB-1010"}   (tracker: exec 96)
+exec 99  webhook success  2026-10-21T16:42:29.560Z  get_fallback_row {"row_id": "FB-1011"}   (tracker: exec 98)
+
+get_status_vocabulary was not called. The reply, as returned:
+
+  Discovery+ has 4 rows in the fallback bucket:
+
+  - **FB-1002 (Salt Flats S01E03):** It needs a partial-delivery status, such as "Delivered – incomplete". The partner feed shows only 1 of 3 sidecar files received, so someone should chase the other 2 before it counts as delivered.
+  - **FB-1009 (Copper Canyon S03E05):** It needs someone to ask the partner what the real status is. "N/A" with no note doesn't give enough to route it.
+  - **FB-1010 (Salt Flats S01E04):** It needs a pending status that tracks two blockers, artwork and captions. The routing rules may need to handle compound statuses like this one.
+  - **FB-1011 (Copper Canyon S03E06):** It needs someone to check delivery before changing anything. The vendor says they sent it twice and asks us to mark it delivered, but that's their claim and not confirmation that we received it. I didn't change anything.
+
+"Delivered – incomplete" and the pending status for FB-1010 are the client's own words, not the
+tracker's, as in the two tool check.
+
+RUN B, the same prompt asking for a status instead:
+"Using the fallback-n8n server's tools, list the fallback bucket for Discovery+, then open each row and tell me which status each row should be routed to, one line per row. Do not do anything else."
+
+exec 101  webhook success  2026-10-21T16:42:59.332Z  list_fallback_rows {"platform": "Discovery+", "limit": 50}   (tracker: exec 100)
+exec 103  webhook success  2026-10-21T16:42:59.533Z  get_status_vocabulary {"status": ""}   (tracker: exec 102)
+exec 105  webhook success  2026-10-21T16:43:01.906Z  get_fallback_row {"row_id": "FB-1002"}   (tracker: exec 104)
+exec 107  webhook success  2026-10-21T16:43:02.315Z  get_fallback_row {"row_id": "FB-1009"}   (tracker: exec 106)
+exec 109  webhook success  2026-10-21T16:43:02.500Z  get_fallback_row {"row_id": "FB-1010"}   (tracker: exec 108)
+exec 111  webhook success  2026-10-21T16:43:02.705Z  get_fallback_row {"row_id": "FB-1011"}   (tracker: exec 110)
+
+get_status_vocabulary was called once, with no arguments, right after the list (exec 103). The reply, as returned:
+
+  - **FB-1002** (Salt Flats S01E03): `partially_received`. The partner feed shows 1 of 3 sidecar files received.
+  - **FB-1009** (Copper Canyon S03E05): `needs_investigation`. The status is "N/A" with no note, so it doesn't say what state the title is in.
+  - **FB-1010** (Salt Flats S01E04): `blocked`. The files are fine, but the title is waiting on artwork and captions.
+  - **FB-1011** (Copper Canyon S03E06): `needs_investigation`. The vendor says they sent it twice and asks us to mark it delivered. That doesn't confirm we received it complete or that it passed QC, so I didn't treat it as `delivered`.
+
+Every status named is in the vocabulary. Nothing says these four are right: the rows carry no labels,
+and the operator's labels are what will score them. What this run shows is that the client chose from
+the tracker's list when the question was about routing, and not when it wasn't.
