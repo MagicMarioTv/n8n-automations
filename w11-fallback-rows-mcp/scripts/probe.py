@@ -1,15 +1,24 @@
 """Named checks against the W11 MCP endpoint. Writes a JSON record and prints a summary.
 
-Usage: python3 -I probe.py <base_url> <token_file> <out_file>
+Usage: python3 -I probe.py <base_url> <token_file> <out_file> [--compare <record>]
 The token is read from a file and never written to the record.
+With --compare, each check is also compared with the same named check in an earlier record: HTTP status
+and the full response, timings ignored. Exits 1 if any check differs or is missing from either side.
 """
+import argparse
 import json
 import sys
 import time
 import urllib.error
 import urllib.request
 
-BASE, TOKEN_FILE, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
+parser = argparse.ArgumentParser()
+parser.add_argument('base_url')
+parser.add_argument('token_file')
+parser.add_argument('out_file')
+parser.add_argument('--compare', metavar='RECORD')
+opts = parser.parse_args()
+BASE, TOKEN_FILE, OUT = opts.base_url, opts.token_file, opts.out_file
 URL = BASE.rstrip('/') + '/mcp/fallback-rows'
 TOKEN = open(TOKEN_FILE).read().strip()
 PROPOSED = '2025-11-25'
@@ -98,3 +107,30 @@ for c in record['checks']:
     r = c['response']
     brief = json.dumps(r)[:160] if r is not None else ''
     print(f"{c['check']:<26} {c['http_status']} {c['ms']:>5}ms  {brief}")
+
+if opts.compare:
+    # Everything a client sees is compared. Timings are not, and neither is the endpoint URL.
+    def comparable(c):
+        return {k: v for k, v in c.items() if k not in ('ms', 'expect')}
+
+    before = {c['check']: c for c in json.load(open(opts.compare))['checks']}
+    now = {c['check']: c for c in record['checks']}
+    differing = 0
+    print(f"\nCompared with {opts.compare}:")
+    for name in list(before) + [n for n in now if n not in before]:
+        if name not in now or name not in before:
+            differing += 1
+            print(f"  MISSING  {name}  ({'not run now' if name not in now else 'not in the record'})")
+        elif comparable(now[name]) != comparable(before[name]):
+            differing += 1
+            print(f"  DIFF     {name}")
+            for key in sorted(set(now[name]) | set(before[name])):
+                a, b = before[name].get(key), now[name].get(key)
+                if key not in ('ms', 'expect') and a != b:
+                    print(f"           {key}: was {json.dumps(a)[:200]}")
+                    print(f"           {' ' * len(key)}  now {json.dumps(b)[:200]}")
+        else:
+            print(f"  MATCH    {name}")
+    total = len(set(before) | set(now))
+    print(f"{total - differing} of {total} checks match.")
+    sys.exit(1 if differing else 0)

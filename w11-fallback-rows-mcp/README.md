@@ -28,7 +28,9 @@ The row tools' descriptions say that `raw_status` and `last_note` are text writt
 
 You need the n8n instance from [w6](../w6-vps-deploy). No OpenAI, Anthropic or Qdrant credential is involved: these tools are a lookup, with no model on the server side.
 
-**1. The mock tracker.** Import [`tracker-workflow.json`](tracker-workflow.json) and **publish** it. It has no trigger of its own that anything outside n8n can reach.
+**For the VPS, [`DEPLOY.md`](DEPLOY.md) is the step by step version of this, with the ship checks and what each failure looks like.**
+
+**1. The mock tracker.** Import [`tracker-workflow.json`](tracker-workflow.json) and **publish** it. Unpublished, every tool call fails with `Workflow is not active and cannot be executed.` (reproduced locally). It has no trigger of its own that anything outside n8n can reach.
 
 **2. A token.** Create a **Bearer Auth** credential named `W11 MCP token` with a long random value (`openssl rand -hex 32`). Keep the value somewhere that isn't a repo.
 
@@ -41,10 +43,10 @@ You need the n8n instance from [w6](../w6-vps-deploy). No OpenAI, Anthropic or Q
 **4. Check it** from any machine with the token in a file:
 
 ```bash
-python3 scripts/probe.py https://<your-instance> ~/path/to/token-file checks.json
+python3 -I scripts/probe.py https://<your-instance> ~/path/to/token-file checks.json --compare mcp-checks/local-checks-2026-10-21.json
 ```
 
-It runs every named check in [The endpoint, checked](#the-endpoint-checked) and writes the responses (never the token) to `checks.json`.
+It runs every named check in [The endpoint, checked](#the-endpoint-checked), writes the responses (never the token) to `checks.json`, and with `--compare` checks each response against the committed record, timings ignored. It ends with `18 of 18 checks match.` and exits 0, or names each check that differs and exits 1.
 
 **5. A client.** For Claude Code:
 
@@ -212,7 +214,7 @@ What w10's [NSA mapping](../w10-sop-assistant-mcp#security) says still holds, wi
 
 ## Next
 
-1. **Deploy to the VPS** and run `scripts/probe.py` through Caddy from a machine off the box, then the client check, as the ship gate for this piece.
+1. **Deploy to the VPS** with [`DEPLOY.md`](DEPLOY.md): `scripts/probe.py --compare` through Caddy from a machine off the box, then the two client prompts, as the ship gate for this piece.
 2. **The real vocabulary** in place of the invented one: the status names only, never tracker rows.
 3. **The operator's labels** for a fallback test set, hand written before anything classifies it, and scored against the vocabulary's names.
 4. **A gated write**: a tool that proposes a route for a row, checked against the vocabulary, and stops at an approval, the w7 pattern, so the MCP endpoint never writes on its own.
@@ -229,6 +231,7 @@ Following the repo's rule since 9/14: a README may claim something works only if
 - **Auth, protocol, schemas, every input path:** [the probe record](mcp-checks/local-checks-2026-10-21.json), executions 63 to 89.
 - **Errors reach the client as data:** executions 81 and 82 read through the API: the tracker received `row_id: "1004"`, and the MCP execution's tool output is the `error` object, not an empty result.
 - **A real client:** two tools, [the record](mcp-checks/claude-code-client-discovery-2026-10-21.txt), executions 53 to 62, read back through the n8n API before a later re-import deleted them; three tools, [the record](mcp-checks/claude-code-client-vocabulary-2026-10-21.txt), executions 90 to 111.
+- **`--compare` catches a difference:** run against the committed record, 18 of 18 matched, exit 0; against the two tool record from the first commit (`2f2be10`), `tools/list` came back DIFF and the three vocabulary checks MISSING, 14 of 18, exit 1. The three reproduced failures in [`DEPLOY.md`](DEPLOY.md) were run the same way, then the committed state restored by re-import and checked again at 18 of 18.
 - **Optional inputs:** `tools/list` in the probe record, `platform`, `limit` and `status` absent from `required` and carrying their defaults.
 - **Why `status` exists:** a workflow tool with no `$fromAI()` becomes a plain LangChain tool with a required `input` string, read in 2.35.7's `WorkflowToolService.createStructuredTool`, not run.
 - **Caller policy:** `workflowsFromSameOwner` is the default in 2.35.7's `@n8n/config` source; the tracker export sets no other.
