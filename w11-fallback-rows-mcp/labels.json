@@ -3,7 +3,7 @@
   "labeled_by": "Mario Moreno",
   "labeled_on": "2026-10-21",
   "method": "One pass through all twelve rows on a labeling page that showed each row exactly as get_fallback_row returns it, plus the vocabulary with its meanings, and suggested nothing. Notes are the operator's, verbatim.",
-  "vocabulary": "The w11 invented vocabulary, ten statuses, as served by get_status_vocabulary on 2026-10-21.",
+  "vocabulary": "Labeled against the w11 invented vocabulary as first written: ten statuses, as served by get_status_vocabulary on 2026-10-21. The meanings were rewritten from these labels afterwards, and partially_received and blocked removed; no label used either, so every label is a status in the current eight.",
   "seen_model_output_before_labeling": {
     "rows": [
       "FB-1002",

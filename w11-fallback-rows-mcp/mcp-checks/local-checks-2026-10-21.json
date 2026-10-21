@@ -5,21 +5,21 @@
       "check": "no token",
       "expect": "403",
       "http_status": 403,
-      "ms": 96,
+      "ms": 87,
       "response": "Authorization data is wrong!"
     },
     {
       "check": "wrong token",
       "expect": "403",
       "http_status": 403,
-      "ms": 70,
+      "ms": 83,
       "response": "Authorization data is wrong!"
     },
     {
       "check": "initialize",
       "expect": "200, protocolVersion 2025-11-25, a session ID",
       "http_status": 200,
-      "ms": 76,
+      "ms": 80,
       "session_id_present": true,
       "response": {
         "result": {
@@ -40,7 +40,7 @@
       "check": "tools/list",
       "expect": "three tools: list_fallback_rows, get_fallback_row, get_status_vocabulary",
       "http_status": 200,
-      "ms": 129,
+      "ms": 72,
       "response": {
         "result": {
           "tools": [
@@ -109,7 +109,7 @@
       "check": "list, no arguments",
       "expect": "total 12, returned 12, oldest first",
       "http_status": 200,
-      "ms": 122,
+      "ms": 160,
       "tool": "list_fallback_rows",
       "arguments": {},
       "response": {
@@ -151,7 +151,7 @@
       "check": "list, limit 3",
       "expect": "total 12, returned 3, the three oldest",
       "http_status": 200,
-      "ms": 118,
+      "ms": 122,
       "tool": "list_fallback_rows",
       "arguments": {
         "limit": 3
@@ -173,7 +173,7 @@
       "check": "list, unknown platform",
       "expect": "error field naming the allowed platforms",
       "http_status": 200,
-      "ms": 177,
+      "ms": 167,
       "tool": "list_fallback_rows",
       "arguments": {
         "platform": "Netflix"
@@ -195,7 +195,7 @@
       "check": "list, limit 0",
       "expect": "error field, limit 1 to 50",
       "http_status": 200,
-      "ms": 128,
+      "ms": 129,
       "tool": "list_fallback_rows",
       "arguments": {
         "limit": 0
@@ -217,7 +217,7 @@
       "check": "list, limit 51",
       "expect": "error field, limit 1 to 50",
       "http_status": 200,
-      "ms": 189,
+      "ms": 223,
       "tool": "list_fallback_rows",
       "arguments": {
         "limit": 51
@@ -239,7 +239,7 @@
       "check": "get, FB-1011",
       "expect": "the row, with source and last_note",
       "http_status": 200,
-      "ms": 110,
+      "ms": 179,
       "tool": "get_fallback_row",
       "arguments": {
         "row_id": "FB-1011"
@@ -261,7 +261,7 @@
       "check": "get, lower case fb-1004",
       "expect": "the row FB-1004",
       "http_status": 200,
-      "ms": 178,
+      "ms": 207,
       "tool": "get_fallback_row",
       "arguments": {
         "row_id": "fb-1004"
@@ -283,7 +283,7 @@
       "check": "get, FB-9999",
       "expect": "error field: row not found",
       "http_status": 200,
-      "ms": 111,
+      "ms": 145,
       "tool": "get_fallback_row",
       "arguments": {
         "row_id": "FB-9999"
@@ -305,7 +305,7 @@
       "check": "get, malformed 1004",
       "expect": "error field: must look like FB-NNNN",
       "http_status": 200,
-      "ms": 190,
+      "ms": 195,
       "tool": "get_fallback_row",
       "arguments": {
         "row_id": "1004"
@@ -327,7 +327,7 @@
       "check": "get, no row_id",
       "expect": "an error, not a row",
       "http_status": 200,
-      "ms": 73,
+      "ms": 88,
       "tool": "get_fallback_row",
       "arguments": {},
       "response": {
@@ -346,9 +346,9 @@
     },
     {
       "check": "vocabulary, no arguments",
-      "expect": "total 10, every status with its meaning",
+      "expect": "total 8, every status with its meaning",
       "http_status": 200,
-      "ms": 127,
+      "ms": 131,
       "tool": "get_status_vocabulary",
       "arguments": {},
       "response": {
@@ -356,7 +356,7 @@
           "content": [
             {
               "type": "text",
-              "text": "[\n  {\n    \"total\": 10,\n    \"statuses\": [\n      {\n        \"status\": \"awaiting_delivery\",\n        \"meaning\": \"Expected from a vendor or partner, and nothing usable has arrived yet.\"\n      },\n      {\n        \"status\": \"partially_received\",\n        \"meaning\": \"Some of the expected files arrived and some did not, for example the video without all of its sidecar files.\"\n      },\n      {\n        \"status\": \"ingested\",\n        \"meaning\": \"Everything expected arrived and is in the asset system, not yet encoded or checked.\"\n      },\n      {\n        \"status\": \"encoding\",\n        \"meaning\": \"Being encoded to the platform ladder.\"\n      },\n      {\n        \"status\": \"qc_hold\",\n        \"meaning\": \"Held after a QC check failed or was inconclusive, until a person reviews the report.\"\n      },\n      {\n        \"status\": \"redelivery_requested\",\n        \"meaning\": \"A new copy was asked for because what arrived is unusable: truncated, corrupt, or not to spec.\"\n      },\n      {\n        \"status\": \"blocked\",\n        \"meaning\": \"The files are fine, but the title is waiting on something else: artwork, captions, subtitles or metadata.\"\n      },\n      {\n        \"status\": \"legal_hold\",\n        \"meaning\": \"Held by legal or rights. Must not be published until the hold is lifted.\"\n      },\n      {\n        \"status\": \"delivered\",\n        \"meaning\": \"Received complete, passed QC, and delivered to the platform.\"\n      },\n      {\n        \"status\": \"needs_investigation\",\n        \"meaning\": \"What was received does not say what state the title is in. A person has to find out before it can be routed.\"\n      }\n    ]\n  }\n]"
+              "text": "[\n  {\n    \"total\": 8,\n    \"statuses\": [\n      {\n        \"status\": \"awaiting_delivery\",\n        \"meaning\": \"Something expected has not arrived yet: the asset, or any part of it, such as sidecar files, artwork, captions or subtitles. A partial arrival stays here until every missing part is in.\"\n      },\n      {\n        \"status\": \"ingested\",\n        \"meaning\": \"Everything expected arrived and is in the asset system, not yet encoded or checked.\"\n      },\n      {\n        \"status\": \"encoding\",\n        \"meaning\": \"Being encoded to the platform ladder.\"\n      },\n      {\n        \"status\": \"qc_hold\",\n        \"meaning\": \"Held after a QC failure the team can review and resolve itself. A failure the team cannot check is redelivery_requested, and an unclear QC result is needs_investigation.\"\n      },\n      {\n        \"status\": \"redelivery_requested\",\n        \"meaning\": \"A corrected or new copy is needed from earlier in the pipeline, because what arrived is unusable or failed a check the team cannot fix or verify itself.\"\n      },\n      {\n        \"status\": \"legal_hold\",\n        \"meaning\": \"Held by legal or rights. Must not be published until the hold is lifted.\"\n      },\n      {\n        \"status\": \"delivered\",\n        \"meaning\": \"Delivered to the platform and complete for its region. A delivered status with a typo or informal wording still counts, and so does an exception the region does not require. A vendor saying it sent the files is not enough: delivery has to be confirmed.\"\n      },\n      {\n        \"status\": \"needs_investigation\",\n        \"meaning\": \"The status does not say what state the title is in: it is blank, says nothing, points somewhere else for the answer, or asks a question. A person has to find out from the team or system that knows before it can be routed.\"\n      }\n    ]\n  }\n]"
             }
           ]
         },
@@ -368,7 +368,7 @@
       "check": "vocabulary, QC_Hold",
       "expect": "the qc_hold entry: case and spaces ignored",
       "http_status": 200,
-      "ms": 177,
+      "ms": 199,
       "tool": "get_status_vocabulary",
       "arguments": {
         "status": " QC_Hold "
@@ -378,7 +378,7 @@
           "content": [
             {
               "type": "text",
-              "text": "[\n  {\n    \"status\": {\n      \"status\": \"qc_hold\",\n      \"meaning\": \"Held after a QC check failed or was inconclusive, until a person reviews the report.\"\n    }\n  }\n]"
+              "text": "[\n  {\n    \"status\": {\n      \"status\": \"qc_hold\",\n      \"meaning\": \"Held after a QC failure the team can review and resolve itself. A failure the team cannot check is redelivery_requested, and an unclear QC result is needs_investigation.\"\n    }\n  }\n]"
             }
           ]
         },
@@ -390,7 +390,7 @@
       "check": "vocabulary, unknown status",
       "expect": "error field listing the known names",
       "http_status": 200,
-      "ms": 126,
+      "ms": 106,
       "tool": "get_status_vocabulary",
       "arguments": {
         "status": "in_progress"
@@ -400,7 +400,7 @@
           "content": [
             {
               "type": "text",
-              "text": "[\n  {\n    \"error\": \"unknown status\",\n    \"status\": \"in_progress\",\n    \"known\": [\n      \"awaiting_delivery\",\n      \"partially_received\",\n      \"ingested\",\n      \"encoding\",\n      \"qc_hold\",\n      \"redelivery_requested\",\n      \"blocked\",\n      \"legal_hold\",\n      \"delivered\",\n      \"needs_investigation\"\n    ]\n  }\n]"
+              "text": "[\n  {\n    \"error\": \"unknown status\",\n    \"status\": \"in_progress\",\n    \"known\": [\n      \"awaiting_delivery\",\n      \"ingested\",\n      \"encoding\",\n      \"qc_hold\",\n      \"redelivery_requested\",\n      \"legal_hold\",\n      \"delivered\",\n      \"needs_investigation\"\n    ]\n  }\n]"
             }
           ]
         },
