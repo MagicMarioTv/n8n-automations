@@ -91,7 +91,7 @@ calls = [
     ('get, FB-9999', 'get_fallback_row', {'row_id': 'FB-9999'}, 'error field: row not found'),
     ('get, malformed 1004', 'get_fallback_row', {'row_id': '1004'}, 'error field: must look like FB-NNNN'),
     ('get, no row_id', 'get_fallback_row', {}, 'an error, not a row'),
-    ('vocabulary, no arguments', 'get_status_vocabulary', {}, 'total 10, every status with its meaning'),
+    ('vocabulary, no arguments', 'get_status_vocabulary', {}, 'total 8, every status with its meaning'),
     ('vocabulary, QC_Hold', 'get_status_vocabulary', {'status': ' QC_Hold '}, 'the qc_hold entry: case and spaces ignored'),
     ('vocabulary, unknown status', 'get_status_vocabulary', {'status': 'in_progress'}, 'error field listing the known names'),
 ]

@@ -1,0 +1,102 @@
+{
+  "description": "Operator labels for the twelve w11 fallback rows: the status each row should be routed to, from the w11 vocabulary. Ground truth written by Mario Moreno, who does this triage as day work; the labels are the operator's judgment, not a model's. The rows and the vocabulary are invented.",
+  "labeled_by": "Mario Moreno",
+  "labeled_on": "2026-10-21",
+  "method": "One pass through all twelve rows on a labeling page that showed each row exactly as get_fallback_row returns it, plus the vocabulary with its meanings, and suggested nothing. Notes are the operator's, verbatim.",
+  "vocabulary": "Labeled against the w11 invented vocabulary as first written: ten statuses, as served by get_status_vocabulary on 2026-10-21. The meanings were rewritten from these labels afterwards, and partially_received and blocked removed; no label used either, so every label is a status in the current eight.",
+  "seen_model_output_before_labeling": {
+    "rows": [
+      "FB-1002",
+      "FB-1009",
+      "FB-1010",
+      "FB-1011"
+    ],
+    "why": "A Claude Code client's routing for these four Discovery+ rows (claude-code-client-vocabulary-2026-10-21.txt, run B) was shown to the operator before labeling. The other eight rows were labeled with no model output seen. The labels agree with that run on 1 of the 4 (FB-1009)."
+  },
+  "labels": [
+    {
+      "row_id": "FB-1001",
+      "status": "redelivery_requested",
+      "note": "We don’t have the ability to check audio levels and will ask for a re-ingestion of the audio with a corrected file to a team that is earlier in the pipeline.",
+      "labeled_at": "2026-10-21T17:11:19.589Z",
+      "seen_model_output": false
+    },
+    {
+      "row_id": "FB-1002",
+      "status": "awaiting_delivery",
+      "note": "Waiting for the 2 other sidecar files to come in.",
+      "labeled_at": "2026-10-21T17:12:11.853Z",
+      "seen_model_output": true
+    },
+    {
+      "row_id": "FB-1003",
+      "status": "needs_investigation",
+      "note": "Note says the asset was uploaded but the status is empty so we would need the engineering team to investigate.",
+      "labeled_at": "2026-10-21T17:13:04.638Z",
+      "seen_model_output": false
+    },
+    {
+      "row_id": "FB-1004",
+      "status": "legal_hold",
+      "note": "Hold requested by the legal team.",
+      "labeled_at": "2026-10-21T17:13:34.435Z",
+      "seen_model_output": false
+    },
+    {
+      "row_id": "FB-1005",
+      "status": "redelivery_requested",
+      "note": "Need a new copy since the original is unusable.",
+      "labeled_at": "2026-10-21T17:14:20.156Z",
+      "seen_model_output": false
+    },
+    {
+      "row_id": "FB-1006",
+      "status": "delivered",
+      "note": "Forced narrative subtitles for French audio is not required for this region.",
+      "labeled_at": "2026-10-21T17:15:46.528Z",
+      "seen_model_output": false
+    },
+    {
+      "row_id": "FB-1007",
+      "status": "needs_investigation",
+      "note": "A human needs to find the email to have context.",
+      "labeled_at": "2026-10-21T17:16:12.704Z",
+      "seen_model_output": false
+    },
+    {
+      "row_id": "FB-1008",
+      "status": "delivered",
+      "note": "Delivered was misspelled in the label.",
+      "labeled_at": "2026-10-21T17:16:55.612Z",
+      "seen_model_output": false
+    },
+    {
+      "row_id": "FB-1009",
+      "status": "needs_investigation",
+      "note": "A human needs to investigate the workflows this asset runs though to hopefully diagnose the solution or escalation path.",
+      "labeled_at": "2026-10-21T17:17:49.414Z",
+      "seen_model_output": true
+    },
+    {
+      "row_id": "FB-1010",
+      "status": "awaiting_delivery",
+      "note": "Awaiting for the components listed to arrive.",
+      "labeled_at": "2026-10-21T17:18:30.896Z",
+      "seen_model_output": true
+    },
+    {
+      "row_id": "FB-1011",
+      "status": "delivered",
+      "note": "The asset is confirmed to be delivered on platform and a human would update the status manually in the system.",
+      "labeled_at": "2026-10-21T17:19:57.030Z",
+      "seen_model_output": true
+    },
+    {
+      "row_id": "FB-1012",
+      "status": "needs_investigation",
+      "note": "Not sure if the QC team is asking for permission to pass. We would follow up with them to get clarification.",
+      "labeled_at": "2026-10-21T17:22:05.429Z",
+      "seen_model_output": false
+    }
+  ]
+}
