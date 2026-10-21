@@ -2,7 +2,7 @@
 
 The flagship's target, from [w7](../w7-media-request-triage#next): the **fallback bucket**, the tracker rows where the rule engine finds no matching status and hands a person a pile to work through by hand. This build is its first piece: three read only MCP tools that let any MCP client see that pile and the statuses it could be routed to, **`list_fallback_rows`**, **`get_fallback_row`** and **`get_status_vocabulary`**, served the way [w10](../w10-sop-assistant-mcp) served the SOP search, by n8n's own MCP Server Trigger behind a Bearer token.
 
-The rows and the status vocabulary come from a **mock tracker**, twelve invented rows and ten invented statuses in a sub-workflow, so the tools have something real shaped to read before the flagship has a real tracker behind it. No row carries a label. What each one should have been routed to is the operator's call, made in a test set, not written into the data.
+The rows and the status vocabulary come from a **mock tracker**, twelve invented rows and ten invented statuses in a sub-workflow, so the tools have something real shaped to read before the flagship has a real tracker behind it. No row carries a label. What each one should have been routed to is the operator's call, kept apart from the data in [`labels.json`](labels.json) (The labels).
 
 **Status: tested on a local n8n 2.35.7 on 10/21/2026, not yet on the VPS.** Every check below ran against the committed exports re-imported into that local instance, on `localhost`, without Caddy or TLS. The VPS deploy and the same checks through `https://n8n.mariomoreno.dev` are the next step (Next, 1).
 
@@ -108,6 +108,28 @@ The rows are built to be the kinds of thing a rule engine can't match, without s
 
 ---
 
+## The labels
+
+[`labels.json`](labels.json) holds the status each of the twelve rows should be routed to, written by Mario on 10/21: one labeler, one pass, a note on every row. The labeling page showed each row exactly as `get_fallback_row` returns it, with the vocabulary and its meanings, and suggested nothing. The rows themselves still carry no label; the answers live only in this file.
+
+| Label | Rows |
+|---|---|
+| `needs_investigation` | FB-1003 (blank), FB-1007 (`see email`), FB-1009 (`N/A`), FB-1012 (`PASS?`) |
+| `delivered` | FB-1006 (`Accepted w/ exceptions`), FB-1008 (`Delivred`), FB-1011 (`Sent x2 - pls mark delivered`) |
+| `redelivery_requested` | FB-1001 (`FAIL - loudness ...`), FB-1005 (`re-ingest req'd`) |
+| `awaiting_delivery` | FB-1002 (`DELIVERED (partial)`), FB-1010 (`pending artwork + captions`) |
+| `legal_hold` | FB-1004 (`on hold per legal`) |
+
+**Five of the ten statuses were never used**: `partially_received`, `ingested`, `encoding`, `qc_hold` and `blocked`. Twelve rows can't show those statuses aren't needed. They do show this set can't test them, which is [w7's](../w7-media-request-triage#what-broke) three value enum tested on two, at a larger scale: a classifier that overuses `qc_hold` would go unnoticed here.
+
+**Two labels go against the vocabulary's own meanings.** FB-1002 (one of three sidecar files received) and FB-1010 (waiting on artwork and captions) are both `awaiting_delivery`. The written meanings put them under `partially_received` and `blocked`. In the operator's practice, anything still to arrive is awaiting delivery. The meanings were invented for this build, so the labels win, and as written the meanings would mark a classifier wrong for following them. They need rewriting from the operator's usage before anything is scored.
+
+**Three labels rest on facts the row doesn't hold.** FB-1011 is `delivered` because the asset *"is confirmed to be delivered on platform"*. FB-1006 is `delivered` because the missing subtitles are *"not required for this region"*. FB-1001 is `redelivery_requested` because *"we don't have the ability to check audio levels"*. None of that is in anything the tools return. A classifier reading only the tools can't reach those three labels for the operator's reason. FB-1011 is the row with the vendor's instruction in it: from the row alone, the careful answer is `needs_investigation`, and the operator's answer comes from a fact the row doesn't hold. Either the tools grow that context (platform status, the region's spec, what the team can check), or a score reports those rows separately.
+
+**Four rows were labeled after seeing a model's routing.** FB-1002, FB-1009, FB-1010 and FB-1011 were shown in the three tool client check (run B) before labeling, which breaks w7's labels first rule for those four. Each label carries `seen_model_output`. The labels agree with that run on 1 of the 4 (FB-1009), so nothing suggests they were pulled toward it, but the flag stays.
+
+---
+
 ## The endpoint, checked
 
 [`scripts/probe.py`](scripts/probe.py) runs these against the endpoint and writes [the record](mcp-checks/local-checks-2026-10-21.json). This run: the committed exports, re-imported into a local n8n 2.35.7, executions 63 to 89.
@@ -146,7 +168,7 @@ Every tool call that reached the tracker took **110 to 204ms**. That is localhos
 | The two tool prompt, word for word: *what you think it needs* | **No** | Its own again: "Delivered – incomplete", a pending status with two blockers | 90 to 99 |
 | The same, asking *which status each row should be routed to* | **Yes**, once, right after the list (exec 103) | All four from the vocabulary: `partially_received`, `needs_investigation`, `blocked`, `needs_investigation` | 100 to 111 |
 
-**A tool description can't make a client call the tool.** The description says to use the vocabulary before saying what a row should be. Asked what each row *needs*, the client didn't treat that as saying what a row should be, and didn't call it. Asked for a *status*, it did, and chose only from the list. Whatever drives the flagship has to ask the routing question, or name the vocabulary step itself; nothing on the server side can force it. And nobody has said those four statuses are right: the rows have no labels yet.
+**A tool description can't make a client call the tool.** The description says to use the vocabulary before saying what a row should be. Asked what each row *needs*, the client didn't treat that as saying what a row should be, and didn't call it. Asked for a *status*, it did, and chose only from the list. Whatever drives the flagship has to ask the routing question, or name the vocabulary step itself; nothing on the server side can force it. Against the operator's labels, written afterwards, that run agrees on 1 of the 4 (The labels).
 
 ---
 
@@ -202,7 +224,8 @@ What w10's [NSA mapping](../w10-sop-assistant-mcp#security) says still holds, wi
 
 - **Local only.** Not on the VPS, not through Caddy, no TLS. Every number above is localhost.
 - **A mock tracker.** Twelve invented rows. Nothing here says how a real bucket's rows read.
-- **No labels.** The rows say what was received, not what it should have been. The flagship's test set needs the operator's labels, written before any classifier runs, as in w7.
+- **Twelve labels, one labeler, one pass.** Five statuses never appear, four rows were labeled after seeing a model's routing, and three labels depend on facts outside the row (The labels).
+- **The vocabulary's meanings disagree with the labels on two rows.** Scoring against them as written would penalize a classifier for following the definitions.
 - **The vocabulary is invented.** Ten statuses written for this build, not the rule engine's real list.
 - **A client uses the vocabulary only when asked about routing.** One run of each prompt; asked an open question, it invented statuses again.
 - **No paging**, and no sort other than oldest first.
@@ -216,7 +239,7 @@ What w10's [NSA mapping](../w10-sop-assistant-mcp#security) says still holds, wi
 
 1. **Deploy to the VPS** with [`DEPLOY.md`](DEPLOY.md): `scripts/probe.py --compare` through Caddy from a machine off the box, then the two client prompts, as the ship gate for this piece.
 2. **The real vocabulary** in place of the invented one: the status names only, never tracker rows.
-3. **The operator's labels** for a fallback test set, hand written before anything classifies it, and scored against the vocabulary's names.
+3. **Rewrite the vocabulary's meanings from the labels**, then score a classifier over the twelve rows against [`labels.json`](labels.json), reporting the three outside knowledge rows and the four seen rows separately.
 4. **A gated write**: a tool that proposes a route for a row, checked against the vocabulary, and stops at an approval, the w7 pattern, so the MCP endpoint never writes on its own.
 5. **Monitoring that reads the reply**, not the execution status, so an `error` reply or a schema rejection is counted.
 
@@ -235,4 +258,5 @@ Following the repo's rule since 9/14: a README may claim something works only if
 - **Optional inputs:** `tools/list` in the probe record, `platform`, `limit` and `status` absent from `required` and carrying their defaults.
 - **Why `status` exists:** a workflow tool with no `$fromAI()` becomes a plain LangChain tool with a required `input` string, read in 2.35.7's `WorkflowToolService.createStructuredTool`, not run.
 - **Caller policy:** `workflowsFromSameOwner` is the default in 2.35.7's `@n8n/config` source; the tracker export sets no other.
+- **Labels:** [`labels.json`](labels.json) compared field by field with the labeling page's store, read back through the artifact data API: `status`, `note` and `labeled_at` on all 12 rows, 36 of 36 identical. Tallies and the 1 of 4 agreement computed by script from those values.
 - **No secrets:** every file in this folder was searched for the token value and the local API key before commit; neither appears. The local credential and workflow IDs in the exports belong to a throwaway instance.
