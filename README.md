@@ -20,6 +20,7 @@ I work in content operations at Warner Bros. Discovery, where I automate encodin
 | 8 | [w8-ops-agent](./w8-ops-agent) | AI Agent node with three tools, chat trigger and memory, agent versus chain cost measured at 14.7x, tool error handling under three configurations, a mock API with real status codes |
 | 9 | [w9-rag-sop-assistant](./w9-rag-sop-assistant) | RAG over ten invented SOPs with Qdrant beside n8n, cited answers, a superseded document answered as current and the metadata fix measured, a hand-reviewed twenty question golden set scoring 18 of 20 · [post](https://lnkd.in/p/e2BTy83B) |
 | 10 | [w10-sop-assistant-mcp](./w10-sop-assistant-mcp) | Project 2. The w9 SOP search exposed as an MCP tool with Bearer auth, a retrieval filter that fixed the golden set's one real miss, ingest that replaces in place under live searches, Langfuse traces, a security section mapped to NSA's MCP guidance · [walkthrough](https://www.loom.com/share/1404deec8dd842cebafd55f93ed1f014) · [post](https://lnkd.in/p/ea4zB2fp) |
+| 11 | [w11-fallback-rows-mcp](./w11-fallback-rows-mcp) | Project 3, in progress. The flagship's first tools: the rule engine's fallback bucket read over MCP from a mock tracker sub-workflow, errors returned as data, named checks and a Claude Code client run on a local n8n 2.35.7, not yet on the VPS |
 
 ## Themes I care about
 
