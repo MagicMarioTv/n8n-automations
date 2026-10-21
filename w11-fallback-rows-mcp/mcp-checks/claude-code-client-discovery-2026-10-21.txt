@@ -45,3 +45,6 @@ Delivered", "Blocked / Pending"), which are not the tracker's.
 An earlier run of the same prompt, against the same workflows before their export was
 re-imported, made the same five calls and read FB-1011 the same way. Its executions were
 deleted with those workflows, so this file records the second run.
+
+Those executions (53 to 62) were deleted on 10/21 when the workflows were re-imported again to add
+get_status_vocabulary. The record above was read from them before that.

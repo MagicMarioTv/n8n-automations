@@ -87,6 +87,16 @@
               "canBeUsedToMatch": true,
               "type": "number",
               "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
             }
           ],
           "attemptToConvertTypes": false,
@@ -158,12 +168,103 @@
               "canBeUsedToMatch": true,
               "type": "number",
               "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
             }
           ],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
         }
       }
+    },
+    {
+      "parameters": {
+        "description": "Get the closed set of statuses the media operations tracker's rule engine routes rows to, each with what it means. Use it before saying what a fallback row should be: name one of these statuses exactly, and never a status of your own. If none of them fits what the row says, the answer is needs_investigation. Optional input: status, one status name to look up; leave it empty for the whole list. Returns total and statuses, each with status and meaning, or status for a single lookup. An unknown name returns an error field with the known names. This tool only reads.",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "h3AyQkSBxs55qvdC",
+          "cachedResultName": "W11 - Mock tracker (fallback bucket)"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "operation": "vocabulary",
+            "status": "={{ $fromAI('status', 'One status name to look up. Leave empty for the whole list.', 'string', '') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "operation",
+              "displayName": "operation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "row_id",
+              "displayName": "row_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            },
+            {
+              "id": "platform",
+              "displayName": "platform",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": true
+            },
+            {
+              "id": "limit",
+              "displayName": "limit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        360,
+        220
+      ],
+      "id": "c0d22b8a-877c-4542-80d7-9bd3d9c35129",
+      "name": "get_status_vocabulary"
     }
   ],
   "connections": {
@@ -179,6 +280,17 @@
       ]
     },
     "get_fallback_row": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_status_vocabulary": {
       "ai_tool": [
         [
           {

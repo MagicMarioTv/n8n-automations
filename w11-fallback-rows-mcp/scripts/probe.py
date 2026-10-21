@@ -68,7 +68,7 @@ check('initialize', f'200, protocolVersion {PROPOSED}, a session ID', s, m, ms, 
 post({'jsonrpc': '2.0', 'method': 'notifications/initialized'}, session=session)
 
 s, h, m, ms = post({'jsonrpc': '2.0', 'id': 2, 'method': 'tools/list'}, session=session)
-check('tools/list', 'two tools, list_fallback_rows and get_fallback_row', s, m, ms)
+check('tools/list', 'three tools: list_fallback_rows, get_fallback_row, get_status_vocabulary', s, m, ms)
 
 calls = [
     ('list, no arguments', 'list_fallback_rows', {}, 'total 12, returned 12, oldest first'),
@@ -82,6 +82,9 @@ calls = [
     ('get, FB-9999', 'get_fallback_row', {'row_id': 'FB-9999'}, 'error field: row not found'),
     ('get, malformed 1004', 'get_fallback_row', {'row_id': '1004'}, 'error field: must look like FB-NNNN'),
     ('get, no row_id', 'get_fallback_row', {}, 'an error, not a row'),
+    ('vocabulary, no arguments', 'get_status_vocabulary', {}, 'total 10, every status with its meaning'),
+    ('vocabulary, QC_Hold', 'get_status_vocabulary', {'status': ' QC_Hold '}, 'the qc_hold entry: case and spaces ignored'),
+    ('vocabulary, unknown status', 'get_status_vocabulary', {'status': 'in_progress'}, 'error field listing the known names'),
 ]
 for i, (name, tool, args, expect) in enumerate(calls, start=10):
     s, h, m, ms = post({'jsonrpc': '2.0', 'id': i, 'method': 'tools/call',
