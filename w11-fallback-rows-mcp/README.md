@@ -1,10 +1,12 @@
-# w11-fallback-rows-mcp: the flagship's first tools, over MCP (Project 3, in progress)
+# w11-fallback-rows-mcp: a mock tracker's fallback rows, over MCP (a pattern study)
 
-The flagship's target, from [w7](../w7-media-request-triage#next): the **fallback bucket**, the tracker rows where the rule engine finds no matching status and hands a person a pile to work through by hand. This build is its first piece: three read only MCP tools that let any MCP client see that pile and the statuses it could be routed to, **`list_fallback_rows`**, **`get_fallback_row`** and **`get_status_vocabulary`**, served the way [w10](../w10-sop-assistant-mcp) served the SOP search, by n8n's own MCP Server Trigger behind a Bearer token.
+The **fallback bucket**, from [w7](../w7-media-request-triage#next): the tracker rows where the rule engine finds no matching status and hands a person a pile to work through by hand. This build is a pattern study in serving that kind of data over MCP: three read only tools that let any MCP client see a pile of fallback rows and the statuses they could be routed to, **`list_fallback_rows`**, **`get_fallback_row`** and **`get_status_vocabulary`**, served the way [w10](../w10-sop-assistant-mcp) served the SOP search, by n8n's own MCP Server Trigger behind a Bearer token.
 
-The rows and the status vocabulary come from a **mock tracker**, twelve invented rows and eight invented statuses in a sub-workflow, so the tools have something real shaped to read before the flagship has a real tracker behind it. No row carries a label. What each one should have been routed to is the operator's call, kept apart from the data in [`labels.json`](labels.json) (The labels).
+**It is not the flagship.** The flagship (Project 3) is its own repo, with its own invented rows, rule table and labels, and it is not public yet. This build was made on 10/21 without the flagship's tool list in front of it, so its rows and statuses are its own and match nothing in the flagship. It is kept because what it measured carries over (Next).
 
-**Status: tested on a local n8n 2.35.7 on 10/21/2026, not yet on the VPS.** Every check below ran against the committed exports re-imported into that local instance, on `localhost`, without Caddy or TLS. The VPS deploy and the same checks through `https://n8n.mariomoreno.dev` are the next step (Next, 1).
+The rows and the status vocabulary come from a **mock tracker**, twelve invented rows and eight invented statuses in a sub-workflow, made up for this build alone. No row carries a label. What each one should have been routed to is the operator's call, kept apart from the data in [`labels.json`](labels.json) (The labels).
+
+**Status: tested on a local n8n 2.35.7 on 10/21/2026, and not deployed.** Every check below ran against the committed exports re-imported into that local instance, on `localhost`, without Caddy or TLS. A VPS deploy is not planned: nothing depends on these tools, and a public endpoint serving invented data would add surface for no gain. [`DEPLOY.md`](DEPLOY.md) stays as the checklist if that changes.
 
 ---
 
@@ -176,16 +178,16 @@ Every tool call that reached the tracker took **110 to 204ms**. That is localhos
 
 | Prompt | Vocabulary called? | Statuses in the reply | Executions |
 |---|---|---|---|
-| The two tool prompt, word for word: *what you think it needs* | **No** | Its own again: "Delivered – incomplete", a pending status with two blockers | 90 to 99 |
+| The two tool prompt, word for word: *what you think it needs* | **No** | Its own again: a delivered but incomplete status, and a pending status with two blockers | 90 to 99 |
 | The same, asking *which status each row should be routed to* | **Yes**, once, right after the list (exec 103) | All four from the vocabulary: `partially_received`, `needs_investigation`, `blocked`, `needs_investigation` | 100 to 111 |
 
-**A tool description can't make a client call the tool.** The description says to use the vocabulary before saying what a row should be. Asked what each row *needs*, the client didn't treat that as saying what a row should be, and didn't call it. Asked for a *status*, it did, and chose only from the list. Whatever drives the flagship has to ask the routing question, or name the vocabulary step itself; nothing on the server side can force it. Against the operator's labels, written afterwards, that run agrees on 1 of the 4 (The labels).
+**A tool description can't make a client call the tool.** The description says to use the vocabulary before saying what a row should be. Asked what each row *needs*, the client didn't treat that as saying what a row should be, and didn't call it. Asked for a *status*, it did, and chose only from the list. Whatever drives a client that has to classify must ask the routing question, or name the vocabulary step itself; nothing on the server side can force it. Against the operator's labels, written afterwards, that run agrees on 1 of the 4 (The labels).
 
 ---
 
 ## Trade-offs
 
-**Read only, on purpose, for now.** Nothing in this build changes a row. The flagship will need to propose a route for a row, and that tool belongs behind w7's approval gate, with a person saying yes before anything is written. Building the reads first means the gate gets designed against tools that are already measured.
+**Read only, on purpose.** Nothing in this build changes a row. Proposing a route for a row would be a write, and a tool like that belongs behind w7's approval gate, with a person saying yes before anything is written.
 
 **Errors as data, not as MCP errors.** A bad platform or an unknown row comes back as a normal result with an `error` field, not `isError: true`. The model reads it either way; the cost is that n8n records every one of those calls as a successful execution, so the execution list can't tell a good lookup from a bad one (Limitations).
 
@@ -233,7 +235,7 @@ What w10's [NSA mapping](../w10-sop-assistant-mcp#security) says still holds, wi
 
 ## Limitations
 
-- **Local only.** Not on the VPS, not through Caddy, no TLS. Every number above is localhost.
+- **Local only, by choice.** Not on the VPS, not through Caddy, no TLS. Every number above is localhost.
 - **A mock tracker.** Twelve invented rows. Nothing here says how a real bucket's rows read.
 - **Twelve labels, one labeler, one pass.** Five statuses never appear, four rows were labeled after seeing a model's routing, and three labels depend on facts outside the row (The labels).
 - **No holdout.** The vocabulary's meanings were rewritten from the same twelve labels a classifier would be scored against.
@@ -248,11 +250,14 @@ What w10's [NSA mapping](../w10-sop-assistant-mcp#security) says still holds, wi
 
 ## Next
 
-1. **Deploy to the VPS** with [`DEPLOY.md`](DEPLOY.md): `scripts/probe.py --compare` through Caddy from a machine off the box, then the two client prompts, as the ship gate for this piece.
-2. **The real vocabulary** in place of the invented one: the status names only, never tracker rows.
-3. **New rows, labeled first**, as a holdout: written to exercise `ingested`, `encoding` and `qc_hold`, labeled by the operator before any classifier sees them. Then score a classifier on both sets, reporting the three outside knowledge rows and the four seen rows separately.
-4. **A gated write**: a tool that proposes a route for a row, checked against the vocabulary, and stops at an approval, the w7 pattern, so the MCP endpoint never writes on its own.
-5. **Monitoring that reads the reply**, not the execution status, so an `error` reply or a schema rejection is counted.
+This build is finished as a study. What it measured goes into the flagship's own tools over MCP:
+
+1. **Errors returned as data**, so a client reads why a lookup failed instead of an empty result.
+2. **A tool description can't make a client call the tool.** A rule table served as a tool is only used when the question is put as routing, or the step is named.
+3. **A rejected call is a green execution.** Monitoring has to read the reply, not the execution status, so an `error` reply or a schema rejection is counted.
+4. **`--compare` probes** as the deploy gate: every named check against a saved record, timings ignored.
+
+If this build is ever deployed after all, [`DEPLOY.md`](DEPLOY.md) is the checklist and the probe is its gate.
 
 ---
 

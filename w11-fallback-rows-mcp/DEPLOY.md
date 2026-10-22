@@ -1,5 +1,7 @@
 # Deploying w11 to the VPS
 
+**Not planned (10/21/2026).** This build is a pattern study and is not going on the VPS; see the [README](README.md). The checklist is kept as written, because it is the deploy pattern the flagship's MCP tools follow.
+
 The checklist for putting the three tools on `n8n.mariomoreno.dev` and running the ship checks from a machine off the box. About 15 minutes. Every step either changes one thing or checks one thing, and it says which.
 
 This adds two workflows and one credential. It doesn't upgrade n8n, change w9 or w10, or touch Qdrant, so there's no droplet snapshot step. Rollback is at the bottom.
